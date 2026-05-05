@@ -1,0 +1,177 @@
+/* Learn page styles */
+
+.learn-page {
+  min-height: 100vh;
+}
+
+/* hero / top section */
+.learn-hero {
+  background-color: #1e1b2e;
+  color: white;
+  text-align: center;
+  padding: 60px 20px 50px;
+}
+
+.learn-hero h1 {
+  font-size: 36px;
+  margin-bottom: 12px;
+}
+
+.learn-hero p {
+  font-size: 16px;
+  color: rgba(255, 255, 255, 0.65);
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.back-link {
+  display: inline-block;
+  color: rgba(255, 255, 255, 0.5);
+  text-decoration: none;
+  font-size: 14px;
+  margin-bottom: 20px;
+}
+
+.back-link:hover {
+  color: white;
+}
+
+/* sections */
+.learn-section {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 50px 20px;
+}
+
+.learn-section h2 {
+  text-align: center;
+  font-size: 28px;
+  margin-bottom: 30px;
+}
+
+/* card grid */
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+.card {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 24px;
+  transition: transform 0.2s;
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+}
+
+.card-icon {
+  font-size: 32px;
+  display: block;
+  margin-bottom: 10px;
+}
+
+.card h3 {
+  font-size: 18px;
+  margin: 0 0 8px;
+}
+
+.card p {
+  font-size: 14px;
+  color: #6b7280;
+  margin: 0;
+}
+
+/* progress bar */
+.progress-text {
+  text-align: center;
+  color: #6b7280;
+  font-size: 14px;
+  margin-bottom: 10px;
+}
+
+.progress-bar {
+  width: 250px;
+  height: 8px;
+  background: #e5e7eb;
+  border-radius: 100px;
+  margin: 0 auto 30px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background-color: #635bff;
+  border-radius: 100px;
+  transition: width 0.3s;
+}
+
+/* letter grid */
+.letter-grid {
+  display: grid;
+  grid-template-columns: repeat(9, 1fr);
+  gap: 10px;
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.letter-btn {
+  aspect-ratio: 1;
+  font-size: 20px;
+  font-weight: 700;
+  border: 2px solid #e5e7eb;
+  border-radius: 10px;
+  background: white;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s, transform 0.15s;
+  font-family: inherit;
+}
+
+.letter-btn:hover {
+  border-color: #635bff;
+  transform: translateY(-2px);
+}
+
+.letter-btn.done {
+  background-color: #635bff;
+  border-color: #635bff;
+  color: white;
+}
+
+/* tip cards */
+.tip-card {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 24px;
+}
+
+.tip-card h3 {
+  font-size: 16px;
+  margin: 0 0 8px;
+}
+
+.tip-card p {
+  font-size: 14px;
+  color: #6b7280;
+  margin: 0;
+}
+
+/* responsive */
+@media (max-width: 768px) {
+  .card-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .letter-grid {
+    grid-template-columns: repeat(6, 1fr);
+  }
+
+  .learn-hero h1 {
+    font-size: 28px;
+  }
+}
