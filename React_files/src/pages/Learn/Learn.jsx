@@ -1,202 +1,141 @@
-import { useState } from 'react'
-import { Link } from 'react-router-dom'
-import './Learn.css'
+import { useState } from "react";
+import { Link } from "react-router-dom";
+import "./Learn.css";
 
-const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('')
+function Learn() {
+  // track which letters the user has practiced
+  const [done, setDone] = useState([]);
 
-const categories = [
-  {
-    id: 'alphabet',
-    icon: '🔤',
-    title: 'Alphabet (A–Z)',
-    desc: 'Master each letter in sign language with visual guides and practice drills.',
-    count: 26,
-    color: '#635bff',
-  },
-  {
-    id: 'greetings',
-    icon: '👋',
-    title: 'Greetings & Basics',
-    desc: 'Learn everyday phrases like Hello, Thank you, Please, and more.',
-    count: 12,
-    color: '#f59e0b',
-  },
-  {
-    id: 'numbers',
-    icon: '🔢',
-    title: 'Numbers (0–20)',
-    desc: 'Count in sign language — essential for shopping, ordering, and daily life.',
-    count: 21,
-    color: '#10b981',
-  },
-  {
-    id: 'food',
-    icon: '🍕',
-    title: 'Food & Drinks',
-    desc: 'Signs for common food items, drinks, and restaurant interactions.',
-    count: 18,
-    color: '#ef4444',
-  },
-  {
-    id: 'emotions',
-    icon: '😊',
-    title: 'Emotions & Feelings',
-    desc: 'Express how you feel — happy, sad, tired, excited, and more.',
-    count: 15,
-    color: '#ec4899',
-  },
-  {
-    id: 'questions',
-    icon: '❓',
-    title: 'Questions & Responses',
-    desc: 'Ask What, Where, When, Who, and reply naturally in sign language.',
-    count: 14,
-    color: '#8b5cf6',
-  },
-]
+  // list of all letters
+  const letters = [
+    "A","B","C","D","E","F","G","H","I","J",
+    "K","L","M","N","O","P","Q","R","S","T",
+    "U","V","W","X","Y","Z"
+  ];
 
-const alphabetData = alphabet.map((letter, i) => ({
-  letter,
-  hint: `Finger-spell the letter ${letter}`,
-  difficulty: i < 10 ? 'Easy' : i < 20 ? 'Medium' : 'Hard',
-}))
-
-export default function Learn() {
-  const [activeCategory, setActiveCategory] = useState(null)
-  const [completedLetters, setCompletedLetters] = useState(new Set())
-
-  const toggleLetter = (letter) => {
-    setCompletedLetters((prev) => {
-      const next = new Set(prev)
-      if (next.has(letter)) next.delete(letter)
-      else next.add(letter)
-      return next
-    })
+  // toggle a letter as done / not done
+  function handleLetterClick(letter) {
+    if (done.includes(letter)) {
+      setDone(done.filter((l) => l !== letter));
+    } else {
+      setDone([...done, letter]);
+    }
   }
 
-  const progress = Math.round((completedLetters.size / 26) * 100)
-
   return (
-    <div className="learn">
-      {/* Hero */}
-      <section className="learn-hero">
-        <div className="learn-hero__inner">
-          <Link to="/" className="learn-hero__back">← Back to Home</Link>
-          <h1 className="learn-hero__title">
-            Learn <span className="learn-hero__accent">Sign Language</span>
-          </h1>
-          <p className="learn-hero__subtitle">
-            Interactive lessons to build your sign language skills step by step.
-            Start with the alphabet and work your way up.
-          </p>
+    <div className="learn-page">
 
-          {/* Stats bar */}
-          <div className="learn-stats">
-            <div className="learn-stat">
-              <span className="learn-stat__value">6</span>
-              <span className="learn-stat__label">Categories</span>
-            </div>
-            <div className="learn-stat__divider" />
-            <div className="learn-stat">
-              <span className="learn-stat__value">106</span>
-              <span className="learn-stat__label">Total Signs</span>
-            </div>
-            <div className="learn-stat__divider" />
-            <div className="learn-stat">
-              <span className="learn-stat__value">{progress}%</span>
-              <span className="learn-stat__label">Alphabet Done</span>
-            </div>
+      {/* top section */}
+      <div className="learn-hero">
+        <Link to="/" className="back-link">← Back to Home</Link>
+        <h1>Learn Sign Language</h1>
+        <p>
+          Start with the basics and build your way up. Click on letters
+          below to mark them as practiced!
+        </p>
+      </div>
+
+      {/* categories */}
+      <div className="learn-section">
+        <h2>Categories</h2>
+        <div className="card-grid">
+
+          <div className="card">
+            <span className="card-icon">🔤</span>
+            <h3>Alphabet (A–Z)</h3>
+            <p>Learn each letter in sign language.</p>
           </div>
-        </div>
-      </section>
 
-      {/* Categories */}
-      <section className="learn-categories">
-        <h2 className="section-title">Choose a Category</h2>
-        <div className="learn-categories__grid">
-          {categories.map((cat) => (
+          <div className="card">
+            <span className="card-icon">👋</span>
+            <h3>Greetings</h3>
+            <p>Hello, Thank you, Please and more.</p>
+          </div>
+
+          <div className="card">
+            <span className="card-icon">🔢</span>
+            <h3>Numbers (0–20)</h3>
+            <p>Count in sign language.</p>
+          </div>
+
+          <div className="card">
+            <span className="card-icon">🍕</span>
+            <h3>Food & Drinks</h3>
+            <p>Signs for common food items.</p>
+          </div>
+
+          <div className="card">
+            <span className="card-icon">😊</span>
+            <h3>Emotions</h3>
+            <p>Express happy, sad, excited and more.</p>
+          </div>
+
+          <div className="card">
+            <span className="card-icon">❓</span>
+            <h3>Questions</h3>
+            <p>Ask What, Where, When, Who.</p>
+          </div>
+
+        </div>
+      </div>
+
+      {/* alphabet practice */}
+      <div className="learn-section">
+        <h2>Alphabet Practice</h2>
+        <p className="progress-text">
+          {done.length} / 26 letters completed
+        </p>
+
+        <div className="progress-bar">
+          <div
+            className="progress-fill"
+            style={{ width: Math.round((done.length / 26) * 100) + "%" }}
+          ></div>
+        </div>
+
+        <div className="letter-grid">
+          {letters.map((letter) => (
             <button
-              key={cat.id}
-              className={`learn-cat-card ${activeCategory === cat.id ? 'learn-cat-card--active' : ''}`}
-              onClick={() => setActiveCategory(activeCategory === cat.id ? null : cat.id)}
-              style={{ '--cat-color': cat.color }}
+              key={letter}
+              className={done.includes(letter) ? "letter-btn done" : "letter-btn"}
+              onClick={() => handleLetterClick(letter)}
             >
-              <span className="learn-cat-card__icon">{cat.icon}</span>
-              <h3 className="learn-cat-card__title">{cat.title}</h3>
-              <p className="learn-cat-card__desc">{cat.desc}</p>
-              <span className="learn-cat-card__badge">{cat.count} signs</span>
+              {letter}
             </button>
           ))}
         </div>
-      </section>
+      </div>
 
-      {/* Alphabet drill – always visible */}
-      <section className="learn-alphabet">
-        <div className="learn-alphabet__header">
-          <h2 className="section-title">Alphabet Practice</h2>
-          <p className="learn-alphabet__progress-text">
-            {completedLetters.size} / 26 letters completed
-          </p>
-          <div className="learn-alphabet__bar">
-            <div className="learn-alphabet__bar-fill" style={{ width: `${progress}%` }} />
-          </div>
-        </div>
+      {/* tips section */}
+      <div className="learn-section">
+        <h2>Learning Tips</h2>
+        <div className="card-grid">
 
-        <div className="learn-alphabet__grid">
-          {alphabetData.map(({ letter, hint, difficulty }) => {
-            const done = completedLetters.has(letter)
-            return (
-              <button
-                key={letter}
-                className={`letter-card ${done ? 'letter-card--done' : ''}`}
-                onClick={() => toggleLetter(letter)}
-                title={hint}
-              >
-                <span className="letter-card__letter">{letter}</span>
-                <span className={`letter-card__diff letter-card__diff--${difficulty.toLowerCase()}`}>
-                  {difficulty}
-                </span>
-                {done && <span className="letter-card__check">✓</span>}
-              </button>
-            )
-          })}
-        </div>
-      </section>
+          <div className="tip-card">
+            <h3>Practice Daily</h3>
+            <p>Even 10 minutes a day builds muscle memory.</p>
+          </div>
 
-      {/* Tips */}
-      <section className="learn-tips">
-        <h2 className="section-title">Learning Tips</h2>
-        <div className="learn-tips__grid">
           <div className="tip-card">
-            <span className="tip-card__num">01</span>
-            <h3 className="tip-card__title">Practice Daily</h3>
-            <p className="tip-card__desc">
-              Even 10 minutes a day builds muscle memory. Consistency beats intensity.
-            </p>
+            <h3>Use a Mirror</h3>
+            <p>Watch yourself sign to correct mistakes.</p>
           </div>
+
           <div className="tip-card">
-            <span className="tip-card__num">02</span>
-            <h3 className="tip-card__title">Use a Mirror</h3>
-            <p className="tip-card__desc">
-              Watch yourself sign to self-correct hand shapes, positions, and movements.
-            </p>
+            <h3>Learn in Context</h3>
+            <p>Try full phrases instead of single words.</p>
           </div>
+
           <div className="tip-card">
-            <span className="tip-card__num">03</span>
-            <h3 className="tip-card__title">Learn in Context</h3>
-            <p className="tip-card__desc">
-              Try signing full phrases instead of isolated words — it&apos;s more natural and memorable.
-            </p>
+            <h3>Watch Others</h3>
+            <p>Watch videos of people using sign language.</p>
           </div>
-          <div className="tip-card">
-            <span className="tip-card__num">04</span>
-            <h3 className="tip-card__title">Watch Others</h3>
-            <p className="tip-card__desc">
-              Watch videos of native signers. Observe facial expressions — they&apos;re part of the grammar.
-            </p>
-          </div>
+
         </div>
-      </section>
+      </div>
+
     </div>
-  )
+  );
 }
+
+export default Learn;

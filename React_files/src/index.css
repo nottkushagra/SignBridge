@@ -1,60 +1,19 @@
+/* Global styles */
+
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 
-:root {
-  /* Core palette */
-  --color-primary: #635bff;
-  --color-primary-dark: #4f46e5;
-  --color-primary-soft: rgba(99, 91, 255, 0.08);
-  --color-accent: #f59e0b;
-
-  /* Text */
-  --color-text: #1e1b2e;
-  --color-text-muted: #6b7280;
-
-  /* Surfaces */
-  --color-bg: #f8f9fc;
-  --color-surface: #ffffff;
-  --color-border: #e5e7eb;
-
-  /* Fonts */
-  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
-  --font-display: 'Inter', system-ui, -apple-system, sans-serif;
-
-  font-family: var(--font-sans);
-  font-size: 16px;
-  line-height: 1.6;
-  color: var(--color-text);
-  background: var(--color-bg);
-
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-rendering: optimizeLegibility;
-}
-
-*,
-*::before,
-*::after {
+* {
+  margin: 0;
+  padding: 0;
   box-sizing: border-box;
 }
 
 body {
-  margin: 0;
-}
-
-h1, h2, h3, h4, h5, h6 {
-  margin: 0;
-  font-family: var(--font-display);
-  color: var(--color-text);
-  line-height: 1.2;
-}
-
-p {
-  margin: 0;
-}
-
-img {
-  max-width: 100%;
-  display: block;
+  font-family: 'Inter', sans-serif;
+  font-size: 16px;
+  color: #1e1b2e;
+  background-color: #f8f9fc;
+  line-height: 1.6;
 }
 
 a {
@@ -62,37 +21,6 @@ a {
   text-decoration: none;
 }
 
-/* Utility button classes used across the app */
-.btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4rem;
-  padding: 0.75rem 1.6rem;
-  border-radius: 10px;
-  font-size: 0.95rem;
-  font-weight: 600;
-  text-decoration: none;
-  cursor: pointer;
-  border: none;
-  transition: background 0.2s, transform 0.2s, box-shadow 0.2s;
-}
-
-.btn--primary {
-  background: var(--color-primary);
-  color: #fff;
-}
-.btn--primary:hover {
-  background: var(--color-primary-dark);
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(99, 91, 255, 0.3);
-}
-
-.btn--outline {
-  background: transparent;
-  color: var(--color-primary);
-  border: 2px solid var(--color-primary);
-}
-.btn--outline:hover {
-  background: var(--color-primary-soft);
-  transform: translateY(-2px);
+h1, h2, h3 {
+  line-height: 1.2;
 }
