@@ -1,11 +1,12 @@
+import { Link } from "react-router-dom";
 import "./Footer.css";
 
 const footerLinks = [
-  { label: "Home", href: "#home" },
-  { label: "Learn", href: "#learn" },
-  { label: "Practice", href: "#practice" },
-  { label: "Convert", href: "#convert" },
-  { label: "Restaurant Mode", href: "#restaurant" },
+  { label: "Home", to: "/" },
+  { label: "Learn", to: "/learn" },
+  { label: "Practice", to: "/learn" },
+  { label: "Convert", to: "/#convert" },
+  { label: "Restaurant Mode", to: "/#restaurant" },
 ];
 
 const legalLinks = [
@@ -21,10 +22,10 @@ export default function Footer() {
     <footer className="footer" aria-label="Site footer">
       <div className="footer__inner">
         <div className="footer__brand">
-          <a href="#home" className="footer__logo">
+          <Link to="/" className="footer__logo">
             <span aria-hidden="true">🤟</span>
             <span>Sign<strong>Bridge</strong></span>
-          </a>
+          </Link>
           <p className="footer__tagline">
             Universal Sign Language Assistant — breaking communication barriers,
             one sign at a time.
@@ -36,7 +37,7 @@ export default function Footer() {
           <ul>
             {footerLinks.map((link) => (
               <li key={link.label}>
-                <a href={link.href} className="footer__link">{link.label}</a>
+                <Link to={link.to} className="footer__link">{link.label}</Link>
               </li>
             ))}
           </ul>
@@ -45,9 +46,9 @@ export default function Footer() {
         <div className="footer__cta">
           <p className="footer__nav-heading">Get Started</p>
           <p className="footer__cta-text">Ready to bridge the gap?</p>
-          <a href="#learn" className="btn btn--primary footer__cta-btn">
+          <Link to="/learn" className="btn btn--primary footer__cta-btn">
             Start Learning →
-          </a>
+          </Link>
         </div>
       </div>
 
