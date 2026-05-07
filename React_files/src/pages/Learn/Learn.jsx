@@ -3,8 +3,22 @@ import { Link } from "react-router-dom";
 import "./Learn.css";
 
 function Learn() {
-  // track which letters the user has practiced
+
   const [done, setDone] = useState([]);
+
+  // daily word feature
+  const words = [
+    { word: "Hello", emoji: "👋" },
+    { word: "Thank You", emoji: "🙏" },
+    { word: "Please", emoji: "🤲" },
+    { word: "Sorry", emoji: "😔" },
+    { word: "Yes", emoji: "✅" },
+    { word: "No", emoji: "❌" },
+  ];
+  const [wordIndex, setWordIndex] = useState(0);
+
+  // simple quiz feature
+  const [showAnswer, setShowAnswer] = useState(false);
 
   // list of all letters
   const letters = [
@@ -13,7 +27,7 @@ function Learn() {
     "U","V","W","X","Y","Z"
   ];
 
-  // toggle a letter as done / not done
+  
   function handleLetterClick(letter) {
     if (done.includes(letter)) {
       setDone(done.filter((l) => l !== letter));
@@ -25,7 +39,7 @@ function Learn() {
   return (
     <div className="learn-page">
 
-      {/* top section */}
+
       <div className="learn-hero">
         <Link to="/" className="back-link">← Back to Home</Link>
         <h1>Learn Sign Language</h1>
@@ -35,7 +49,7 @@ function Learn() {
         </p>
       </div>
 
-      {/* categories */}
+    
       <div className="learn-section">
         <h2>Categories</h2>
         <div className="card-grid">
@@ -79,7 +93,6 @@ function Learn() {
         </div>
       </div>
 
-      {/* alphabet practice */}
       <div className="learn-section">
         <h2>Alphabet Practice</h2>
         <p className="progress-text">
@@ -106,7 +119,7 @@ function Learn() {
         </div>
       </div>
 
-      {/* tips section */}
+     
       <div className="learn-section">
         <h2>Learning Tips</h2>
         <div className="card-grid">
@@ -131,6 +144,43 @@ function Learn() {
             <p>Watch videos of people using sign language.</p>
           </div>
 
+        </div>
+      </div>
+
+      {/* Daily Word Section */}
+      <div className="learn-section">
+        <h2>Word of the Day</h2>
+        <div className="daily-word-box">
+          <span className="daily-word-emoji">{words[wordIndex].emoji}</span>
+          <h3 className="daily-word-text">{words[wordIndex].word}</h3>
+          <p>Try signing this word!</p>
+          <button
+            className="daily-word-btn"
+            onClick={() => setWordIndex((wordIndex + 1) % words.length)}
+          >
+            Next Word →
+          </button>
+        </div>
+      </div>
+
+      {/* Simple Quiz Section */}
+      <div className="learn-section">
+        <h2>Quick Quiz</h2>
+        <div className="quiz-box">
+          <p className="quiz-question">What does this sign mean? 🤟</p>
+          <div className="quiz-options">
+            <button className="quiz-option" onClick={() => setShowAnswer(true)}>A) Goodbye</button>
+            <button className="quiz-option" onClick={() => setShowAnswer(true)}>B) I Love You</button>
+            <button className="quiz-option" onClick={() => setShowAnswer(true)}>C) Thank You</button>
+          </div>
+          {showAnswer && (
+            <div className="quiz-answer">
+              <p>✅ Correct answer: <strong>B) I Love You</strong></p>
+              <button className="daily-word-btn" onClick={() => setShowAnswer(false)}>
+                Try Again
+              </button>
+            </div>
+          )}
         </div>
       </div>
 

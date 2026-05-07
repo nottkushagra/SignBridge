@@ -1,7 +1,18 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import "./Home.css";
 
 function Home() {
+  // simple counter using useState
+  const [count, setCount] = useState(0);
+
+  // simple list of testimonials
+  const testimonials = [
+    { name: "Aarav", text: "SignBridge helped me learn sign language so fast!" },
+    { name: "Priya", text: "I can now talk to my deaf friend. Thank you!" },
+    { name: "Rahul", text: "The alphabet practice is really fun and easy." },
+  ];
+
   return (
     <div>
       {/* Hero Section */}
@@ -66,6 +77,32 @@ function Home() {
         <div className="converter-box">
           <span>📷</span>
           <p>Camera / converter will appear here</p>
+        </div>
+      </section>
+
+      {/* Stats Counter Section */}
+      <section className="stats-section">
+        <h2>Join Our Community</h2>
+        <p>See how many people are learning with us!</p>
+        <div className="stats-box">
+          <p className="stats-number">{count}</p>
+          <p>People Interested</p>
+          <button className="btn btn-primary" onClick={() => setCount(count + 1)}>
+            I'm Interested! 🙋
+          </button>
+        </div>
+      </section>
+
+      {/* Testimonials Section */}
+      <section className="testimonials-section">
+        <h2>What People Say</h2>
+        <div className="testimonials-grid">
+          {testimonials.map((item, index) => (
+            <div className="testimonial-card" key={index}>
+              <p className="testimonial-text">"{item.text}"</p>
+              <p className="testimonial-name">— {item.name}</p>
+            </div>
+          ))}
         </div>
       </section>
     </div>
