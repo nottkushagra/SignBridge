@@ -1,5 +1,3 @@
-/* Learn page styles */
-
 .learn-page {
   min-height: 100vh;
 }
@@ -161,7 +159,106 @@
   margin: 0;
 }
 
-/* responsive */
+
+/* Daily Word */
+.daily-word-box {
+  text-align: center;
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 40px 20px;
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+.daily-word-emoji {
+  font-size: 60px;
+  display: block;
+  margin-bottom: 10px;
+}
+
+.daily-word-text {
+  font-size: 28px;
+  margin: 0 0 8px;
+}
+
+.daily-word-box > p {
+  color: #6b7280;
+  font-size: 14px;
+  margin: 0 0 20px;
+}
+
+.daily-word-btn {
+  background-color: #635bff;
+  color: white;
+  border: none;
+  padding: 10px 24px;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.2s;
+}
+
+.daily-word-btn:hover {
+  background-color: #4f46e5;
+}
+
+/* Quiz */
+.quiz-box {
+  text-align: center;
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 40px 20px;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.quiz-question {
+  font-size: 20px;
+  font-weight: 600;
+  margin: 0 0 20px;
+}
+
+.quiz-options {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-width: 300px;
+  margin: 0 auto 20px;
+}
+
+.quiz-option {
+  padding: 12px 20px;
+  border: 2px solid #e5e7eb;
+  border-radius: 10px;
+  background: white;
+  font-size: 15px;
+  cursor: pointer;
+  font-family: inherit;
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.quiz-option:hover {
+  border-color: #635bff;
+  background: rgba(99, 91, 255, 0.05);
+}
+
+.quiz-answer {
+  margin-top: 16px;
+  padding: 16px;
+  background: #f0fdf4;
+  border-radius: 10px;
+}
+
+.quiz-answer p {
+  margin: 0 0 12px;
+  font-size: 15px;
+  color: #166534;
+}
+
 @media (max-width: 768px) {
   .card-grid {
     grid-template-columns: 1fr;
