@@ -2,10 +2,51 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import "./Learn.css";
 
+// Import all ASL sign images
+import signA from "../../assets/signs/A.png";
+import signB from "../../assets/signs/B.png";
+import signC from "../../assets/signs/C.png";
+import signD from "../../assets/signs/D.png";
+import signE from "../../assets/signs/E.png";
+import signF from "../../assets/signs/F.png";
+import signG from "../../assets/signs/G.png";
+import signH from "../../assets/signs/H.png";
+import signI from "../../assets/signs/I.png";
+import signJ from "../../assets/signs/J.png";
+import signK from "../../assets/signs/K.png";
+import signL from "../../assets/signs/L.png";
+import signM from "../../assets/signs/M.png";
+import signN from "../../assets/signs/N.png";
+import signO from "../../assets/signs/O.png";
+import signP from "../../assets/signs/P.png";
+import signQ from "../../assets/signs/Q.png";
+import signR from "../../assets/signs/R.png";
+import signS from "../../assets/signs/S.png";
+import signT from "../../assets/signs/T.png";
+import signU from "../../assets/signs/U.png";
+import signV from "../../assets/signs/V.png";
+import signW from "../../assets/signs/W.png";
+import signX from "../../assets/signs/X.png";
+import signY from "../../assets/signs/Y.png";
+import signZ from "../../assets/signs/Z.png";
+
+// Map letters to their sign images
+const signImages = {
+  A: signA, B: signB, C: signC, D: signD, E: signE,
+  F: signF, G: signG, H: signH, I: signI, J: signJ,
+  K: signK, L: signL, M: signM, N: signN, O: signO,
+  P: signP, Q: signQ, R: signR, S: signS, T: signT,
+  U: signU, V: signV, W: signW, X: signX, Y: signY,
+  Z: signZ,
+};
+
 function Learn() {
 
   // track which letters user has practiced
   const [done, setDone] = useState([]);
+
+  // track which letter's sign is being shown
+  const [activeLetter, setActiveLetter] = useState(null);
 
   // all 26 letters
   const letters = [
@@ -14,13 +55,18 @@ function Learn() {
     "U","V","W","X","Y","Z"
   ];
 
-  // mark letter as done or not done
+  // show sign for the letter when clicked
   function handleLetterClick(letter) {
-    if (done.includes(letter)) {
-      setDone(done.filter((l) => l !== letter));
-    } else {
+    setActiveLetter(letter);
+    // mark as practiced
+    if (!done.includes(letter)) {
       setDone([...done, letter]);
     }
+  }
+
+  // close the sign modal
+  function closeSignModal() {
+    setActiveLetter(null);
   }
 
   // daily word feature
@@ -196,13 +242,62 @@ function Learn() {
           {letters.map((letter) => (
             <button
               key={letter}
-              className={done.includes(letter) ? "letter-btn done" : "letter-btn"}
+              className={
+                (done.includes(letter) ? "letter-btn done" : "letter-btn") +
+                (activeLetter === letter ? " active" : "")
+              }
               onClick={() => handleLetterClick(letter)}
             >
               {letter}
             </button>
           ))}
         </div>
+
+        {/* Sign Image Modal */}
+        {activeLetter && (
+          <div className="sign-modal-overlay" onClick={closeSignModal}>
+            <div className="sign-modal" onClick={(e) => e.stopPropagation()}>
+              <button className="sign-modal-close" onClick={closeSignModal}>
+                ×
+              </button>
+              <div className="sign-modal-content">
+                <img
+                  src={signImages[activeLetter]}
+                  alt={`ASL sign for letter ${activeLetter}`}
+                  className="sign-image"
+                />
+                <h3 className="sign-letter-label">{activeLetter}</h3>
+                <p className="sign-description">
+                  This is the ASL sign for the letter "{activeLetter}"
+                </p>
+                <div className="sign-nav-buttons">
+                  <button
+                    className="sign-nav-btn"
+                    onClick={() => {
+                      const idx = letters.indexOf(activeLetter);
+                      const prev = letters[(idx - 1 + 26) % 26];
+                      setActiveLetter(prev);
+                      if (!done.includes(prev)) setDone([...done, prev]);
+                    }}
+                  >
+                    ← {letters[(letters.indexOf(activeLetter) - 1 + 26) % 26]}
+                  </button>
+                  <button
+                    className="sign-nav-btn"
+                    onClick={() => {
+                      const idx = letters.indexOf(activeLetter);
+                      const next = letters[(idx + 1) % 26];
+                      setActiveLetter(next);
+                      if (!done.includes(next)) setDone([...done, next]);
+                    }}
+                  >
+                    {letters[(letters.indexOf(activeLetter) + 1) % 26]} →
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Video Tutorials */}
