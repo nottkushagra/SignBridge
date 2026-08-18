@@ -1,26 +1,338 @@
-/* Global styles */
+/* ============================================
+   SignBridge — Soft Mineral Design System
+   Warm · Muted · Sophisticated · Accessible · Calming
+   Pinterest/Editorial Aesthetic
+   ============================================ */
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap');
 
-* {
+/* --- Design Tokens --- */
+:root {
+  /* 1. Core Neutral Surfaces */
+  --canvas: #F4F0E8;            /* Warm Ivory (60% canvas) */
+  --surface: #FAF8F3;           /* Soft Ivory (25% elevated surfaces/cards) */
+  --surface-muted: #EFEBE2;     /* Slightly deeper ivory for subtle contrast */
+  --surface-cool: #DCE6E5;      /* Mist Blue (feature sections / calm communication) */
+  --surface-learn: #E5ECE0;     /* Subtle Sage Surface for learning */
+  --surface-ai: #EEEAF1;        /* Subtle Lavender Surface for AI/Converter */
+  --surface-warm: #F1E5D8;       /* Subtle Warm Terracotta Surface for Restaurant */
+
+  /* 2. Semantic Accents */
+  --dusty-blue: #A8BDC2;        /* Secondary UI accents, illustrations, highlights */
+  --brand-blue: #6F8790;        /* Active navigation, brand elements, primary CTA */
+  --brand-blue-hover: #536B73;  /* Deepened brand blue for hover states */
+
+  --sage: #AAB7A0;              /* Learning, practice, progress, positive states */
+  --sage-deep: #71816B;         /* Sage CTA buttons, strong learning accents */
+  --sage-hover: #5B6B56;        /* Sage button hover */
+
+  --lavender: #B8AEC6;          /* AI features, smart conversion accents */
+  --lavender-deep: #8D7E9F;     /* AI CTA buttons, smart tool icons */
+  --lavender-hover: #756787;    /* AI button hover */
+
+  --dusty-rose: #D6A9A2;        /* Warm decorative accents */
+  --rose-deep: #B9796F;         /* Restaurant Mode primary accent & button */
+  --rose-hover: #A0645A;        /* Restaurant button hover */
+
+  /* 3. Typography & Contrast */
+  --text-primary: #27343A;      /* Deep Slate — high contrast primary text */
+  --text-secondary: #53636A;    /* Muted Slate — readable secondary body text */
+  --text-muted: #7E8E95;        /* Subdued text for metadata and hints */
+  --text-inverse: #FAF8F3;      /* Crisp ivory text for dark buttons */
+
+  /* 4. Borders & Dividers */
+  --border: #D5D1C8;            /* Tactile paper border */
+  --border-light: #E5E1D8;      /* Soft subtle divider */
+  --border-focus: #6F8790;      /* Accessible focus border */
+
+  /* 5. Tactile Shadows (Soft & Restrained, zero neon glow) */
+  --shadow-card: 0 4px 20px rgba(39, 52, 58, 0.04);
+  --shadow-soft: 0 8px 30px rgba(39, 52, 58, 0.06);
+  --shadow-hover: 0 12px 36px rgba(39, 52, 58, 0.08);
+  --shadow-modal: 0 24px 64px rgba(39, 52, 58, 0.12);
+
+  /* 6. Radii (Restrained 10-14px, not overly pill-shaped) */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 22px;
+
+  /* 7. Transitions */
+  --transition-fast: 0.18s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-smooth: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+  color-scheme: light;
+}
+
+/* --- Night Mineral Palette (Accessible Dark Mode) --- */
+[data-theme="dark"] {
+  --canvas: #242B2C;
+  --surface: #303938;
+  --surface-muted: #2A3332;
+  --surface-cool: #2E3B3C;
+  --surface-learn: #2C3833;
+  --surface-ai: #35333E;
+  --surface-warm: #3D3330;
+
+  --dusty-blue: #91A9AE;
+  --brand-blue: #91A9AE;
+  --brand-blue-hover: #A8BDC2;
+
+  --sage: #96A58E;
+  --sage-deep: #96A58E;
+  --sage-hover: #AAB7A0;
+
+  --lavender: #A99DB7;
+  --lavender-deep: #A99DB7;
+  --lavender-hover: #B8AEC6;
+
+  --dusty-rose: #C59690;
+  --rose-deep: #C59690;
+  --rose-hover: #D6A9A2;
+
+  --text-primary: #F2EFE7;
+  --text-secondary: #C4CBC7;
+  --text-muted: #8E9A98;
+  --text-inverse: #242B2C;
+
+  --border: #424D4C;
+  --border-light: #374241;
+  --border-focus: #91A9AE;
+
+  --shadow-card: 0 4px 20px rgba(0, 0, 0, 0.2);
+  --shadow-soft: 0 8px 30px rgba(0, 0, 0, 0.25);
+  --shadow-hover: 0 12px 36px rgba(0, 0, 0, 0.3);
+  --shadow-modal: 0 24px 64px rgba(0, 0, 0, 0.4);
+
+  color-scheme: dark;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --canvas: #242B2C;
+    --surface: #303938;
+    --surface-muted: #2A3332;
+    --surface-cool: #2E3B3C;
+    --surface-learn: #2C3833;
+    --surface-ai: #35333E;
+    --surface-warm: #3D3330;
+
+    --dusty-blue: #91A9AE;
+    --brand-blue: #91A9AE;
+    --brand-blue-hover: #A8BDC2;
+
+    --sage: #96A58E;
+    --sage-deep: #96A58E;
+    --sage-hover: #AAB7A0;
+
+    --lavender: #A99DB7;
+    --lavender-deep: #A99DB7;
+    --lavender-hover: #B8AEC6;
+
+    --dusty-rose: #C59690;
+    --rose-deep: #C59690;
+    --rose-hover: #D6A9A2;
+
+    --text-primary: #F2EFE7;
+    --text-secondary: #C4CBC7;
+    --text-muted: #8E9A98;
+    --text-inverse: #242B2C;
+
+    --border: #424D4C;
+    --border-light: #374241;
+    --border-focus: #91A9AE;
+
+    --shadow-card: 0 4px 20px rgba(0, 0, 0, 0.2);
+    --shadow-soft: 0 8px 30px rgba(0, 0, 0, 0.25);
+    --shadow-hover: 0 12px 36px rgba(0, 0, 0, 0.3);
+    --shadow-modal: 0 24px 64px rgba(0, 0, 0, 0.4);
+
+    color-scheme: dark;
+  }
+}
+
+/* --- Reset --- */
+*,
+*::before,
+*::after {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
+/* --- Body --- */
 body {
-  font-family: 'Inter', sans-serif;
-  font-size: 16px;
-  color: #1e1b2e;
-  background-color: #f8f9fc;
-  line-height: 1.6;
+  font-family: 'Plus Jakarta Sans', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 1rem;
+  color: var(--text-primary);
+  background-color: var(--canvas);
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
 }
 
+/* --- Links --- */
 a {
   color: inherit;
   text-decoration: none;
 }
 
-h1, h2, h3 {
-  line-height: 1.2;
+/* --- Headings --- */
+h1, h2, h3, h4 {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  color: var(--text-primary);
+  line-height: 1.25;
+  text-wrap: balance;
+}
+
+h1 {
+  font-size: clamp(2.25rem, 1.2rem + 3.5vw, 3.75rem);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+}
+
+h2 {
+  font-size: clamp(1.6rem, 1.1rem + 1.8vw, 2.25rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+h3 {
+  font-size: clamp(1.05rem, 0.95rem + 0.4vw, 1.25rem);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+p {
+  color: var(--text-secondary);
+  text-wrap: pretty;
+}
+
+/* --- Selection --- */
+::selection {
+  background: var(--surface-cool);
+  color: var(--text-primary);
+}
+
+/* --- Focus States for Accessibility --- */
+:focus-visible {
+  outline: 2px solid var(--brand-blue);
+  outline-offset: 2px;
+}
+
+/* --- Global Button System --- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 24px;
+  border-radius: var(--radius-md);
+  font-size: 0.95rem;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  border: 1px solid transparent;
+  font-family: inherit;
+  transition: background var(--transition-fast), border-color var(--transition-fast), transform var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.btn:active {
+  transform: translateY(1px);
+}
+
+/* Primary CTA — Deep Muted Blue */
+.btn-primary {
+  background: var(--brand-blue);
+  color: var(--text-inverse);
+  box-shadow: 0 2px 8px rgba(111, 135, 144, 0.2);
+}
+
+.btn-primary:hover {
+  background: var(--brand-blue-hover);
+  box-shadow: 0 4px 14px rgba(111, 135, 144, 0.3);
+  transform: translateY(-2px);
+}
+
+/* Secondary CTA — Transparent / Ivory Outline */
+.btn-outline {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text-primary);
+}
+
+.btn-outline:hover {
+  background: var(--surface-cool);
+  border-color: var(--dusty-blue);
+  transform: translateY(-2px);
+}
+
+/* Sage Learning CTA */
+.btn-sage {
+  background: var(--sage-deep);
+  color: var(--text-inverse);
+}
+
+.btn-sage:hover {
+  background: var(--sage-hover);
+  transform: translateY(-2px);
+}
+
+/* Lavender AI CTA */
+.btn-ai {
+  background: var(--lavender-deep);
+  color: var(--text-inverse);
+}
+
+.btn-ai:hover {
+  background: var(--lavender-hover);
+  transform: translateY(-2px);
+}
+
+/* Restaurant Rose CTA */
+.btn-restaurant {
+  background: var(--rose-deep);
+  color: var(--text-inverse);
+}
+
+.btn-restaurant:hover {
+  background: var(--rose-hover);
+  transform: translateY(-2px);
+}
+
+/* --- Section Headings --- */
+.section-title {
+  text-align: center;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+}
+
+.section-subtitle {
+  text-align: center;
+  color: var(--text-secondary);
+  font-size: 1rem;
+  margin-bottom: 36px;
+  max-width: 520px;
+  margin-inline: auto;
+}
+
+/* --- Subtle Organic Blob Animations --- */
+@keyframes blob-drift-1 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(8px, -12px) scale(1.03); }
+}
+
+@keyframes blob-drift-2 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(-10px, 10px) scale(0.97); }
+}
+
+/* --- Reduced Motion --- */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }

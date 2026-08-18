@@ -1,0 +1,415 @@
+/* ============================================
+   Practice Page — Soft Mineral Design
+   Warm · Motivating · Calm · Editorial
+   ============================================ */
+
+.practice-page {
+  min-height: 100vh;
+  background: var(--canvas);
+}
+
+.practice-hero {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  color: var(--text-primary);
+  text-align: center;
+  padding: 60px 24px 50px;
+}
+
+.practice-hero h1 {
+  font-size: clamp(2rem, 1.2rem + 2.5vw, 3rem);
+  font-weight: 800;
+  margin-bottom: 12px;
+  color: var(--text-primary);
+}
+
+.practice-hero p {
+  font-size: 1.05rem;
+  color: var(--text-secondary);
+  max-width: 520px;
+  margin: 0 auto;
+  line-height: 1.65;
+}
+
+.practice-section {
+  max-width: 950px;
+  margin: 0 auto;
+  padding: 60px 24px 80px;
+}
+
+.practice-section h2 {
+  text-align: center;
+  margin-bottom: 8px;
+  color: var(--text-primary);
+}
+
+/* --- Mode Selection --- */
+.practice-modes {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 22px;
+}
+
+.practice-mode-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 36px 24px;
+  text-align: center;
+  cursor: pointer;
+  font-family: inherit;
+  color: var(--text-primary);
+  transition: transform var(--transition-fast), border-color var(--transition-fast), box-shadow var(--transition-fast);
+  box-shadow: var(--shadow-card);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.practice-mode-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--brand-blue);
+  box-shadow: var(--shadow-hover);
+}
+
+.mode-icon-wrap {
+  width: 56px;
+  height: 56px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.8rem;
+  margin-bottom: 18px;
+}
+
+.practice-mode-card h3 {
+  font-size: 1.15rem;
+  margin: 0 0 8px;
+  color: var(--text-primary);
+}
+
+.practice-mode-card p {
+  font-size: 0.88rem;
+  color: var(--text-secondary);
+  margin: 0;
+  line-height: 1.6;
+}
+
+/* --- Top Bar --- */
+.practice-top-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 32px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.practice-back-btn {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--text-secondary);
+  padding: 8px 16px;
+  border-radius: var(--radius-sm);
+  font-size: 0.86rem;
+  font-weight: 500;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all var(--transition-fast);
+}
+
+.practice-back-btn:hover {
+  border-color: var(--brand-blue);
+  color: var(--text-primary);
+}
+
+.practice-progress {
+  font-size: 0.88rem;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+.practice-score-badge {
+  font-size: 0.86rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  padding: 6px 14px;
+  border-radius: 100px;
+}
+
+/* --- Flashcard Mode --- */
+.flashcard-area {
+  display: flex;
+  justify-content: center;
+  perspective: 1000px;
+}
+
+.flashcard {
+  width: 100%;
+  max-width: 380px;
+  min-height: 440px;
+  position: relative;
+  transition: transform 0.55s cubic-bezier(0.4, 0, 0.2, 1);
+  transform-style: preserve-3d;
+}
+
+.flashcard.flipped {
+  transform: rotateY(180deg);
+}
+
+.flashcard-front,
+.flashcard-back {
+  position: absolute;
+  inset: 0;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  padding: 36px 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  box-shadow: var(--shadow-soft);
+}
+
+.flashcard-back {
+  transform: rotateY(180deg);
+}
+
+.flashcard-img {
+  width: 180px;
+  height: auto;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+  background: var(--canvas);
+}
+
+.flashcard-prompt {
+  font-size: 1rem;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+.flashcard-input-row {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.flashcard-input {
+  width: 56px;
+  height: 56px;
+  text-align: center;
+  font-size: 1.75rem;
+  font-weight: 800;
+  background: var(--canvas);
+  border: 2px solid var(--border);
+  border-radius: var(--radius-md);
+  color: var(--text-primary);
+  font-family: inherit;
+  transition: border-color var(--transition-fast);
+  text-transform: uppercase;
+}
+
+.flashcard-input:focus {
+  outline: none;
+  border-color: var(--brand-blue);
+}
+
+.flashcard-answer-letter {
+  font-size: 4.5rem;
+  font-weight: 800;
+  color: var(--brand-blue);
+  line-height: 1;
+}
+
+.flashcard-verdict {
+  font-size: 1.1rem;
+  color: var(--text-primary);
+  font-weight: 600;
+  margin: 0;
+}
+
+/* --- Speed Round --- */
+.speed-timer {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--brand-blue);
+}
+
+.speed-area {
+  text-align: center;
+}
+
+.speed-sign-img {
+  width: 200px;
+  height: auto;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border);
+  background: var(--canvas);
+  margin-bottom: 20px;
+}
+
+.speed-prompt {
+  font-size: 1.05rem;
+  color: var(--text-secondary);
+  margin: 0 0 20px;
+}
+
+.speed-options {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.speed-option-btn {
+  width: 56px;
+  height: 56px;
+  font-size: 1.25rem;
+  font-weight: 700;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  color: var(--text-primary);
+  cursor: pointer;
+  font-family: inherit;
+  transition: all var(--transition-fast);
+  box-shadow: 0 2px 6px rgba(39, 52, 58, 0.03);
+}
+
+.speed-option-btn:hover {
+  border-color: var(--brand-blue);
+  background: var(--surface-cool);
+  transform: translateY(-2px);
+}
+
+/* --- Fingerspelling --- */
+.spell-area {
+  text-align: center;
+}
+
+.spell-word {
+  font-size: 2.5rem;
+  font-weight: 800;
+  letter-spacing: 0.25em;
+  margin: 0 0 12px;
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+}
+
+.spell-char {
+  display: inline-block;
+  width: 44px;
+  text-align: center;
+  color: var(--text-muted);
+}
+
+.spell-char.done {
+  color: var(--sage-deep);
+}
+
+.spell-char.current {
+  color: var(--brand-blue);
+  border-bottom: 3px solid var(--brand-blue);
+}
+
+.spell-hint {
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+  margin: 0 0 24px;
+}
+
+.spell-grid {
+  display: grid;
+  grid-template-columns: repeat(9, 1fr);
+  gap: 8px;
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.spell-sign-btn {
+  aspect-ratio: 1;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  cursor: pointer;
+  padding: 4px;
+  transition: all var(--transition-fast);
+}
+
+.spell-sign-btn img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  border-radius: 4px;
+}
+
+.spell-sign-btn:hover {
+  border-color: var(--sage);
+  background: var(--surface-learn);
+  transform: translateY(-2px);
+}
+
+/* --- Result Box --- */
+.practice-result-box {
+  text-align: center;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  padding: 56px 36px;
+  max-width: 500px;
+  margin: 0 auto;
+  box-shadow: var(--shadow-card);
+}
+
+.practice-result-emoji {
+  font-size: 3.5rem;
+  display: block;
+  margin-bottom: 14px;
+}
+
+.practice-result-box h2 {
+  color: var(--text-primary);
+  margin-bottom: 8px;
+}
+
+.practice-result-score {
+  font-size: 1rem;
+  color: var(--text-secondary);
+  margin: 0 0 28px;
+}
+
+.practice-result-actions {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+/* --- Responsive --- */
+@media (max-width: 768px) {
+  .practice-modes {
+    grid-template-columns: 1fr;
+  }
+
+  .spell-grid {
+    grid-template-columns: repeat(6, 1fr);
+  }
+
+  .spell-word {
+    font-size: 1.8rem;
+    letter-spacing: 0.15em;
+  }
+
+  .spell-char {
+    width: 32px;
+  }
+}
