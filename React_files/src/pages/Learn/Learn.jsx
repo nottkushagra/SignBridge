@@ -2,6 +2,50 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import "./Learn.css";
 
+// ASL University course data from Lifeprint.com
+const aslCourses = [
+  {
+    level: "ASL 1",
+    title: "Introduction to ASL",
+    emoji: "🟢",
+    description: "Basic grammar, vocabulary, fingerspelling, numbers, and cultural information related to the Deaf Community.",
+    lessons: Array.from({ length: 15 }, (_, i) => ({
+      number: i + 1,
+      url: `https://www.lifeprint.com/asl101/lessons/lesson${String(i + 1).padStart(2, "0")}.htm`,
+    })),
+  },
+  {
+    level: "ASL 2",
+    title: "Intermediate ASL",
+    emoji: "🔵",
+    description: "Continuation of ASL 1 — further development of expressive and receptive skills, grammar, vocabulary, and cultural awareness.",
+    lessons: Array.from({ length: 15 }, (_, i) => ({
+      number: i + 16,
+      url: `https://www.lifeprint.com/asl101/lessons/lesson${i + 16}.htm`,
+    })),
+  },
+  {
+    level: "ASL 3",
+    title: "Advanced Foundations",
+    emoji: "🟣",
+    description: "Continuation of ASL 2 — advanced expressive and receptive skills, grammar, vocabulary, and cultural awareness.",
+    lessons: Array.from({ length: 15 }, (_, i) => ({
+      number: i + 31,
+      url: `https://www.lifeprint.com/asl101/lessons/lesson${i + 31}.htm`,
+    })),
+  },
+  {
+    level: "ASL 4",
+    title: "Advanced ASL",
+    emoji: "🔴",
+    description: "Continuation of ASL 3 — mastery-level development of expressive and receptive skills, grammar, and related terminology.",
+    lessons: Array.from({ length: 15 }, (_, i) => ({
+      number: i + 46,
+      url: `https://www.lifeprint.com/asl101/lessons/lesson${i + 46}.htm`,
+    })),
+  },
+];
+
 // Import all ASL sign images
 import signA from "../../assets/signs/A.png";
 import signB from "../../assets/signs/B.png";
@@ -30,7 +74,6 @@ import signX from "../../assets/signs/X.png";
 import signY from "../../assets/signs/Y.png";
 import signZ from "../../assets/signs/Z.png";
 
-// Map letters to their sign images
 const signImages = {
   A: signA, B: signB, C: signC, D: signD, E: signE,
   F: signF, G: signG, H: signH, I: signI, J: signJ,
@@ -41,35 +84,28 @@ const signImages = {
 };
 
 function Learn() {
-
-  // track which letters user has practiced
   const [done, setDone] = useState([]);
-
-  // track which letter's sign is being shown
   const [activeLetter, setActiveLetter] = useState(null);
+  const [expandedCourse, setExpandedCourse] = useState(null);
 
-  // all 26 letters
   const letters = [
     "A","B","C","D","E","F","G","H","I","J",
     "K","L","M","N","O","P","Q","R","S","T",
     "U","V","W","X","Y","Z"
   ];
 
-  // show sign for the letter when clicked
   function handleLetterClick(letter) {
     setActiveLetter(letter);
-    // mark as practiced
     if (!done.includes(letter)) {
       setDone([...done, letter]);
     }
   }
 
-  // close the sign modal
   function closeSignModal() {
     setActiveLetter(null);
   }
 
-  // daily word feature
+  // Daily word
   const words = [
     { word: "Hello", emoji: "👋" },
     { word: "Thank You", emoji: "🙏" },
@@ -82,7 +118,7 @@ function Learn() {
   ];
   const [wordIndex, setWordIndex] = useState(0);
 
-  // quiz feature - multiple questions
+  // Quiz
   const quizQuestions = [
     {
       question: "What does this sign mean? 🤟",
@@ -116,16 +152,14 @@ function Learn() {
   const [selectedAnswer, setSelectedAnswer] = useState(null);
   const [quizDone, setQuizDone] = useState(false);
 
-  // handle when user picks a quiz answer
   function handleQuizAnswer(optionIndex) {
-    if (selectedAnswer !== null) return; // already answered
+    if (selectedAnswer !== null) return;
     setSelectedAnswer(optionIndex);
     if (optionIndex === quizQuestions[currentQuestion].answer) {
       setScore(score + 1);
     }
   }
 
-  // go to next question
   function nextQuestion() {
     if (currentQuestion + 1 < quizQuestions.length) {
       setCurrentQuestion(currentQuestion + 1);
@@ -135,7 +169,6 @@ function Learn() {
     }
   }
 
-  // restart quiz
   function restartQuiz() {
     setCurrentQuestion(0);
     setScore(0);
@@ -143,7 +176,7 @@ function Learn() {
     setQuizDone(false);
   }
 
-  // youtube tutorial videos - real ASL content
+  // Tutorials
   const tutorials = [
     {
       title: "ASL Alphabet (A-Z)",
@@ -170,19 +203,20 @@ function Learn() {
   return (
     <div className="learn-page">
 
-      {/* Top Section */}
+      {/* Hero Section */}
       <div className="learn-hero">
         <Link to="/" className="back-link">← Back to Home</Link>
         <h1>Learn Sign Language</h1>
         <p>
-          Start with the basics and build your way up. Click on letters
-          below to mark them as practiced!
+          Explore foundational sign language vocabulary, interactive alphabet practice,
+          and structured ASL lessons.
         </p>
       </div>
 
       {/* Categories */}
       <div className="learn-section">
         <h2>Categories</h2>
+        <p className="section-subtitle">Core vocabulary domains to build your fluency</p>
         <div className="card-grid">
 
           <div className="card">
@@ -221,6 +255,58 @@ function Learn() {
             <p>Ask What, Where, When, Who.</p>
           </div>
 
+        </div>
+      </div>
+
+      {/* ASL University Courses */}
+      <div className="learn-section">
+        <h2>📚 ASL University Courses</h2>
+        <p className="section-subtitle">
+          Structured courses from ASL University (Lifeprint.com) — from beginner to advanced.
+        </p>
+        <div className="courses-grid">
+          {aslCourses.map((course, index) => (
+            <div className="course-card" key={index}>
+              <div
+                className="course-header"
+                onClick={() =>
+                  setExpandedCourse(expandedCourse === index ? null : index)
+                }
+              >
+                <div className="course-header-left">
+                  <span className="course-emoji">{course.emoji}</span>
+                  <div>
+                    <span className="course-level">{course.level}</span>
+                    <h3>{course.title}</h3>
+                  </div>
+                </div>
+                <span
+                  className={
+                    "course-toggle" +
+                    (expandedCourse === index ? " open" : "")
+                  }
+                >
+                  ▾
+                </span>
+              </div>
+              <p className="course-desc">{course.description}</p>
+              {expandedCourse === index && (
+                <div className="course-lessons">
+                  {course.lessons.map((lesson) => (
+                    <a
+                      key={lesson.number}
+                      href={lesson.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="lesson-link"
+                    >
+                      Lesson {lesson.number}
+                    </a>
+                  ))}
+                </div>
+              )}
+            </div>
+          ))}
         </div>
       </div>
 
@@ -338,17 +424,17 @@ function Learn() {
 
           <div className="tip-card">
             <h3>Use a Mirror</h3>
-            <p>Watch yourself sign to correct mistakes.</p>
+            <p>Watch yourself sign to correct hand shapes.</p>
           </div>
 
           <div className="tip-card">
             <h3>Learn in Context</h3>
-            <p>Try full phrases instead of single words.</p>
+            <p>Try full phrases instead of isolated single words.</p>
           </div>
 
           <div className="tip-card">
-            <h3>Watch Others</h3>
-            <p>Watch videos of people using sign language.</p>
+            <h3>Observe Facial Expressions</h3>
+            <p>Non-manual cues are essential in ASL grammar.</p>
           </div>
 
         </div>
@@ -362,7 +448,7 @@ function Learn() {
           <h3 className="daily-word-text">{words[wordIndex].word}</h3>
           <p>Try signing this word!</p>
           <button
-            className="daily-word-btn"
+            className="btn btn-sage"
             onClick={() => setWordIndex((wordIndex + 1) % words.length)}
           >
             Next Word →
@@ -379,7 +465,6 @@ function Learn() {
 
         <div className="quiz-box">
           {quizDone ? (
-            // show score when quiz is finished
             <div className="quiz-result">
               <span className="quiz-result-emoji">
                 {score >= 4 ? "🎉" : score >= 2 ? "👍" : "💪"}
@@ -388,12 +473,11 @@ function Learn() {
               <p className="quiz-score">
                 You got {score} out of {quizQuestions.length} correct
               </p>
-              <button className="daily-word-btn" onClick={restartQuiz}>
+              <button className="btn btn-sage" onClick={restartQuiz}>
                 Try Again
               </button>
             </div>
           ) : (
-            // show current question
             <>
               <p className="quiz-counter">
                 Question {currentQuestion + 1} of {quizQuestions.length}
@@ -403,13 +487,15 @@ function Learn() {
               </p>
               <div className="quiz-options">
                 {quizQuestions[currentQuestion].options.map((option, index) => {
-                  // figure out button style based on answer
                   let btnClass = "quiz-option";
+                  let prefix = "";
                   if (selectedAnswer !== null) {
                     if (index === quizQuestions[currentQuestion].answer) {
                       btnClass = "quiz-option correct";
+                      prefix = "✓ ";
                     } else if (index === selectedAnswer) {
                       btnClass = "quiz-option wrong";
+                      prefix = "✕ ";
                     }
                   }
                   return (
@@ -418,13 +504,13 @@ function Learn() {
                       className={btnClass}
                       onClick={() => handleQuizAnswer(index)}
                     >
-                      {option}
+                      {prefix}{option}
                     </button>
                   );
                 })}
               </div>
               {selectedAnswer !== null && (
-                <button className="daily-word-btn" onClick={nextQuestion}>
+                <button className="btn btn-sage" onClick={nextQuestion}>
                   {currentQuestion + 1 < quizQuestions.length ? "Next Question →" : "See Results"}
                 </button>
               )}
