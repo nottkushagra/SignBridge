@@ -31,14 +31,11 @@ jobs:
         working-directory: React_files
 
       - name: Build for GitHub Pages
-        run: npx vite build --base=/
+        run: npx vite build --base=/SignBridge/
         working-directory: React_files
 
       - name: Copy index.html to 404.html (SPA routing)
         run: cp React_files/dist/index.html React_files/dist/404.html
-
-      - name: Add CNAME for custom subdomain
-        run: echo "signbridge.revki.me" > React_files/dist/CNAME
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
