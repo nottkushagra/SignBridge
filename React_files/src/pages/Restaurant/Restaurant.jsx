@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import { useApp } from "../../context/useApp";
 import "./Restaurant.css";
 
 const menuData = {
@@ -38,11 +39,22 @@ const categoryLabels = {
   desserts: { label: "Desserts", emoji: "🍰" },
 };
 
+const QUICK_SERVER_REQUESTS = [
+  "Water with no ice, please. 💧",
+  "Could we please have the bill? 🧾",
+  "Is this item vegetarian / vegan? 🥗",
+  "No spicy ingredients, please. 🌶️",
+  "Can I have extra napkins? 🧻",
+  "Thank you for your service! 🙏",
+];
+
 function Restaurant() {
+  const { speakText, language } = useApp();
   const [cart, setCart] = useState([]);
   const [activeCategory, setActiveCategory] = useState("appetizers");
   const [showWaiterView, setShowWaiterView] = useState(false);
   const [orderPlaced, setOrderPlaced] = useState(false);
+  const [specialRequest, setSpecialRequest] = useState("");
 
   function addToCart(item) {
     const existing = cart.find((c) => c.id === item.id);
@@ -68,13 +80,10 @@ function Restaurant() {
   const total = cart.reduce((sum, c) => sum + c.price * c.qty, 0);
 
   function speakOrder() {
-    if (!window.speechSynthesis || cart.length === 0) return;
-    window.speechSynthesis.cancel();
+    if (cart.length === 0) return;
     const items = cart.map((c) => `${c.qty} ${c.name}`).join(", ");
-    const text = `My order is: ${items}. Total is ${total.toFixed(2)} dollars.`;
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.rate = 0.88;
-    window.speechSynthesis.speak(utterance);
+    const text = `My order is: ${items}. Total is ${total.toFixed(2)} dollars.${specialRequest ? ` Special note: ${specialRequest}` : ""}`;
+    speakText(text, language);
   }
 
   function placeOrder() {
@@ -82,14 +91,18 @@ function Restaurant() {
     try {
       const history = JSON.parse(localStorage.getItem("signbridge-history") || "[]");
       const items = cart.map((c) => `${c.qty}x ${c.name}`).join(", ");
+      const orderId = "order-" + (history.length + 1);
+      const nowIso = new Date().toISOString();
       history.unshift({
-        id: Date.now(),
+        id: orderId,
         type: "restaurant-order",
-        content: `Order: ${items} — Total: $${total.toFixed(2)}`,
-        timestamp: new Date().toISOString(),
+        content: `Order: ${items} — Total: $${total.toFixed(2)}${specialRequest ? ` [Note: ${specialRequest}]` : ""}`,
+        timestamp: nowIso,
       });
       localStorage.setItem("signbridge-history", JSON.stringify(history));
-    } catch (e) {}
+    } catch (err) {
+      console.warn("Could not save restaurant order to history:", err);
+    }
   }
 
   // Waiter Full-Screen View
@@ -97,7 +110,7 @@ function Restaurant() {
     return (
       <div className="waiter-view" onClick={() => setShowWaiterView(false)}>
         <div className="waiter-card" onClick={(e) => e.stopPropagation()}>
-          <span className="waiter-badge">📋 Table Order</span>
+          <span className="waiter-badge">📋 Table Order Presentation</span>
           <h2>My Order</h2>
           {cart.length === 0 ? (
             <p className="waiter-empty">No items currently in order.</p>
@@ -112,14 +125,24 @@ function Restaurant() {
                   </div>
                 ))}
               </div>
+              {specialRequest && (
+                <div className="waiter-special-note">
+                  <strong>Special Note:</strong> {specialRequest}
+                </div>
+              )}
               <div className="waiter-total">
                 Total: ${total.toFixed(2)}
               </div>
             </>
           )}
-          <button className="btn btn-outline waiter-close-btn" onClick={() => setShowWaiterView(false)}>
-            ✕ Close View
-          </button>
+          <div className="waiter-actions">
+            <button className="btn btn-primary" onClick={speakOrder}>
+              🔊 Read Order Aloud
+            </button>
+            <button className="btn btn-outline waiter-close-btn" onClick={() => setShowWaiterView(false)}>
+              ✕ Close View
+            </button>
+          </div>
         </div>
       </div>
     );
@@ -141,9 +164,10 @@ function Restaurant() {
               Your order of {cart.length} item{cart.length !== 1 ? "s" : ""} (${total.toFixed(2)}) has been recorded and saved to your history.
             </p>
             <div className="confirmed-actions">
-              <button className="btn btn-restaurant" onClick={() => { setCart([]); setOrderPlaced(false); }}>
+              <button className="btn btn-restaurant" onClick={() => { setCart([]); setSpecialRequest(""); setOrderPlaced(false); }}>
                 Start New Order
               </button>
+              <Link to="/history" className="btn btn-outline">View in History</Link>
               <Link to="/" className="btn btn-outline">Go Home</Link>
             </div>
           </div>
@@ -154,13 +178,12 @@ function Restaurant() {
 
   return (
     <div className="restaurant-page">
-      {/* Hero */}
       <div className="restaurant-hero">
         <Link to="/" className="back-link">← Back to Home</Link>
         <h1>🍽️ Restaurant Mode</h1>
         <p>
           Point-and-tap accessible ordering for restaurants, cafes, and dining.
-          Build your order and present it directly to your server.
+          Build your order, add dietary notes, and present directly to your server.
         </p>
       </div>
 
@@ -200,6 +223,23 @@ function Restaurant() {
               </div>
             ))}
           </div>
+
+          {/* Quick Dining Communication Chips */}
+          <div className="dining-quick-requests">
+            <h4 className="quick-requests-title">💬 Quick Server Requests</h4>
+            <div className="quick-requests-chips">
+              {QUICK_SERVER_REQUESTS.map((req, idx) => (
+                <button
+                  key={idx}
+                  className="quick-request-chip"
+                  onClick={() => speakText(req, language)}
+                  title="Speak request aloud"
+                >
+                  {req}
+                </button>
+              ))}
+            </div>
+          </div>
         </div>
 
         {/* Cart Column */}
@@ -228,6 +268,19 @@ function Restaurant() {
                   </div>
                 ))}
               </div>
+
+              {/* Special dietary request input */}
+              <div className="special-note-group">
+                <label className="note-label">Special Dietary / Prep Note:</label>
+                <input
+                  type="text"
+                  placeholder="e.g. No dairy, dressing on side..."
+                  value={specialRequest}
+                  onChange={(e) => setSpecialRequest(e.target.value)}
+                  className="note-input"
+                />
+              </div>
+
               <div className="cart-total">
                 <span>Total Amount</span>
                 <span className="cart-total-amount">${total.toFixed(2)}</span>

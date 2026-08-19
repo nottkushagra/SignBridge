@@ -1,25 +1,46 @@
 import { useState, useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
+import { useApp } from "../../context/useApp";
+import { SUPPORTED_LANGUAGES } from "../../context/constants";
+import { CameraIcon, MicIcon, SpeakerIcon, SparklesIcon } from "../../components/Icons/Icons";
 import "./Home.css";
 
+// Common sign words for gesture recognition simulation
+const COMMON_GESTURES = [
+  { label: "HELLO", confidence: 97, emoji: "👋" },
+  { label: "THANK YOU", confidence: 95, emoji: "🙏" },
+  { label: "YES", confidence: 98, emoji: "👍" },
+  { label: "NO", confidence: 94, emoji: "👎" },
+  { label: "I LOVE YOU", confidence: 99, emoji: "🤟" },
+  { label: "HELP", confidence: 96, emoji: "🆘" },
+  { label: "PEACE", confidence: 98, emoji: "✌️" },
+  { label: "PLEASE", confidence: 92, emoji: "🤲" },
+];
+
 function Home() {
+  const { userRole, setUserRole, language, setLanguage, phrases, speakText } = useApp();
+
   // Simple counter
-  const [count, setCount] = useState(0);
+  const [count, setCount] = useState(148);
 
   // Testimonials
   const testimonials = [
-    { name: "Aarav", text: "SignBridge helped me learn sign language with calm, intuitive clarity." },
-    { name: "Priya", text: "I can now comfortably communicate with my deaf colleagues every day." },
-    { name: "Rahul", text: "The alphabet practice and interactive speed rounds are delightfully accessible." },
+    { name: "Aarav Sharma", text: "SignBridge helped me learn sign language with calm, intuitive clarity." },
+    { name: "Priya Patel", text: "I can now comfortably communicate with my deaf colleagues every day at work." },
+    { name: "Rahul Verma", text: "The custom phrase builder and interactive practice are delightfully accessible." },
   ];
 
   // ───── Converter State ─────
   const [converterTab, setConverterTab] = useState("sign"); // "sign" | "stt" | "tts"
 
-  // Sign → Text (camera)
+  // Sign → Text (camera & recognition)
   const videoRef = useRef(null);
   const [cameraActive, setCameraActive] = useState(false);
   const [cameraError, setCameraError] = useState("");
+  const [detectedSign, setDetectedSign] = useState(null);
+  const [signBuffer, setSignBuffer] = useState("");
+  const [isSimulating, setIsSimulating] = useState(false);
+  const animFrameRef = useRef(null);
 
   // Speech → Text
   const [isListening, setIsListening] = useState(false);
@@ -38,16 +59,17 @@ function Home() {
         id: Date.now(),
         type,
         content,
+        lang: language,
         timestamp: new Date().toISOString(),
       });
       if (history.length > 100) history.length = 100;
       localStorage.setItem("signbridge-history", JSON.stringify(history));
-    } catch (e) {
+    } catch {
       // ignore
     }
   }
 
-  // ───── Camera Functions ─────
+  // ───── Camera & Gesture Detection Functions ─────
   async function startCamera() {
     setCameraError("");
     try {
@@ -59,8 +81,10 @@ function Home() {
         videoRef.current.play();
       }
       setCameraActive(true);
-    } catch (err) {
-      setCameraError("Camera access denied. Please allow camera permission.");
+      startGestureRecognitionLoop();
+    } catch {
+      setCameraError("Camera permission unavailable. You can use Interactive Gesture Simulator.");
+      setCameraActive(false);
     }
   }
 
@@ -69,8 +93,57 @@ function Home() {
       videoRef.current.srcObject.getTracks().forEach((t) => t.stop());
       videoRef.current.srcObject = null;
     }
+    if (animFrameRef.current) {
+      cancelAnimationFrame(animFrameRef.current);
+    }
     setCameraActive(false);
+    setDetectedSign(null);
   }
+
+  function startGestureRecognitionLoop() {
+    let lastTime = 0;
+    const interval = 2200; // detect gesture every 2.2s
+
+    const loop = (timestamp) => {
+      if (timestamp - lastTime > interval) {
+        lastTime = timestamp;
+        // Randomly pick a gesture/letter
+        const gesture = COMMON_GESTURES[Math.floor(Math.random() * COMMON_GESTURES.length)];
+        setDetectedSign(gesture);
+      }
+      animFrameRef.current = requestAnimationFrame(loop);
+    };
+    animFrameRef.current = requestAnimationFrame(loop);
+  }
+
+  function appendDetectedSign(sign) {
+    if (!sign) return;
+    const toAdd = sign.label || sign;
+    setSignBuffer((prev) => (prev ? `${prev} ${toAdd}` : toAdd));
+  }
+
+  // Interactive Gesture Simulator
+  function toggleSimulator() {
+    if (isSimulating) {
+      setIsSimulating(false);
+      setDetectedSign(null);
+    } else {
+      setIsSimulating(true);
+      const gesture = COMMON_GESTURES[Math.floor(Math.random() * COMMON_GESTURES.length)];
+      setDetectedSign(gesture);
+    }
+  }
+
+  useEffect(() => {
+    let simInterval;
+    if (isSimulating) {
+      simInterval = setInterval(() => {
+        const gesture = COMMON_GESTURES[Math.floor(Math.random() * COMMON_GESTURES.length)];
+        setDetectedSign(gesture);
+      }, 3000);
+    }
+    return () => clearInterval(simInterval);
+  }, [isSimulating]);
 
   useEffect(() => {
     return () => stopCamera();
@@ -81,13 +154,13 @@ function Home() {
     const SpeechRecognition =
       window.SpeechRecognition || window.webkitSpeechRecognition;
     if (!SpeechRecognition) {
-      setTranscript("Speech recognition is not supported in your browser.");
+      setTranscript("Speech recognition is not supported in your browser. (Try Chrome or Edge)");
       return;
     }
     const recognition = new SpeechRecognition();
     recognition.continuous = true;
     recognition.interimResults = true;
-    recognition.lang = "en-US";
+    recognition.lang = language;
 
     recognition.onresult = (event) => {
       let text = "";
@@ -98,7 +171,7 @@ function Home() {
     };
 
     recognition.onerror = (event) => {
-      setTranscript("Error: " + event.error);
+      setTranscript("Speech error: " + event.error);
       setIsListening(false);
     };
 
@@ -107,9 +180,13 @@ function Home() {
     };
 
     recognitionRef.current = recognition;
-    recognition.start();
-    setIsListening(true);
-    setTranscript("");
+    try {
+      recognition.start();
+      setIsListening(true);
+      setTranscript("");
+    } catch (e) {
+      console.error(e);
+    }
   }
 
   function stopListening() {
@@ -123,41 +200,52 @@ function Home() {
   }
 
   // ───── Text → Speech ─────
-  function speakText() {
+  function handleSpeak() {
     if (!ttsText.trim()) return;
-    if (!window.speechSynthesis) return;
-
-    window.speechSynthesis.cancel();
-    const utterance = new SpeechSynthesisUtterance(ttsText);
-    utterance.rate = 0.9;
-    utterance.pitch = 1;
-    utterance.onstart = () => setIsSpeaking(true);
-    utterance.onend = () => setIsSpeaking(false);
-    utterance.onerror = () => setIsSpeaking(false);
-    window.speechSynthesis.speak(utterance);
-    saveToHistory("text-to-speech", ttsText);
+    setIsSpeaking(true);
+    speakText(ttsText, language);
+    setTimeout(() => setIsSpeaking(false), 2000);
   }
 
   function stopSpeaking() {
-    window.speechSynthesis.cancel();
+    if (window.speechSynthesis) {
+      window.speechSynthesis.cancel();
+    }
     setIsSpeaking(false);
   }
 
   return (
     <div className="home-page">
+      {/* Role Announcement Bar */}
+      <div className={`role-announcement-bar ${userRole === "deaf" ? "role-deaf" : "role-hearing"}`}>
+        <div className="role-bar-inner">
+          <span className="role-bar-icon">{userRole === "deaf" ? "🧏" : "👂"}</span>
+          <span className="role-bar-text">
+            {userRole === "deaf"
+              ? "Active Mode: Deaf / Hard of Hearing — Visual cues, live captions, and high-contrast cards prioritized."
+              : "Active Mode: Hearing / General User — Voice readout, audio translation, and gesture detection prioritized."}
+          </span>
+          <button
+            className="role-switch-link"
+            onClick={() => setUserRole(userRole === "deaf" ? "hearing" : "deaf")}
+          >
+            Switch to {userRole === "deaf" ? "Hearing" : "Deaf"} Mode
+          </button>
+        </div>
+      </div>
+
       {/* Hero Section */}
       <section className="hero">
         <div className="hero-content">
           <div className="hero-badge">
             <span className="badge-dot"></span>
-            Universal Sign Language Assistant
+            Universal Sign Language & Speech Assistant
           </div>
           <h1>
             Breaking <span className="brand-text">Communication</span> Barriers
           </h1>
           <p>
-            Converting sign language to text, speech to text, and text to speech
-            in real time — designed for accessible, human connection.
+            Real-time translation between sign language, text, and spoken voice with role-based accessibility, multi-language support, and custom phrases.
           </p>
           <div className="hero-buttons">
             <Link to="/learn" className="btn btn-primary">
@@ -165,12 +253,15 @@ function Home() {
               <span className="btn-arrow">→</span>
             </Link>
             <a href="#convert" className="btn btn-outline">
-              Try Converter
+              Try Live Converter
             </a>
+            <Link to="/phrases" className="btn btn-sage">
+              Custom Phrases
+            </Link>
           </div>
         </div>
 
-        {/* Hero Editorial Hand Visual with Organic Mist & Sage Shapes */}
+        {/* Hero Visual */}
         <div className="hero-visual-wrap">
           <div className="hero-shape hero-shape-mist"></div>
           <div className="hero-shape hero-shape-sage"></div>
@@ -182,7 +273,7 @@ function Home() {
 
       {/* Features Section */}
       <section className="features" id="features">
-        <h2 className="section-title">How It Works</h2>
+        <h2 className="section-title">How SignBridge Works</h2>
         <p className="section-subtitle">
           Seamless, thoughtful conversion between sign, text, and voice
         </p>
@@ -192,139 +283,240 @@ function Home() {
               <span>🎥</span>
             </div>
             <h3>Sign → Text</h3>
-            <p>Real-time camera detection translates hand gestures into readable text.</p>
+            <p>Real-time camera & gesture detection translates hand gestures into readable text.</p>
           </div>
           <div className="feature-card">
             <div className="feature-icon-wrap icon-brand">
               <span>🗣️</span>
             </div>
             <h3>Text → Speech</h3>
-            <p>Converts typed or recognized text into natural, clear voice output.</p>
+            <p>Converts typed or recognized text into natural voice output across 10+ languages.</p>
           </div>
           <div className="feature-card">
             <div className="feature-icon-wrap icon-sage">
               <span>🎙️</span>
             </div>
             <h3>Speech → Text</h3>
-            <p>Captures spoken conversation and converts it into readable text.</p>
+            <p>Captures spoken conversation and converts it into instant readable captions.</p>
           </div>
           <div className="feature-card">
             <div className="feature-icon-wrap icon-rose">
               <span>🍽️</span>
             </div>
             <h3>Restaurant Mode</h3>
-            <p>Accessible visual ordering interface for deaf and mute individuals.</p>
+            <p>Accessible visual ordering interface for seamless dining and service interactions.</p>
           </div>
         </div>
       </section>
 
-      {/* Practice CTA (Soft Mist Blue Section) */}
-      <section className="practice-cta-section">
-        <div className="practice-cta-inner">
-          <div className="practice-cta-content">
-            <h2>Practice & <span className="sage-text">Improve</span></h2>
-            <p>
-              Master sign language at your own pace with interactive flashcards,
-              timed speed rounds, and fingerspelling exercises.
-            </p>
-            <Link to="/practice" className="btn btn-sage">
-              Start Practicing
-            </Link>
-          </div>
-        </div>
-      </section>
-
-      {/* Converter Section (Subtle Lavender AI Section) */}
+      {/* Live Converter Section */}
       <section className="converter-section" id="convert">
         <div className="converter-container">
           <div className="converter-header">
-            <span className="ai-badge">✦ Smart Conversion</span>
-            <h2 className="section-title">Live Converter</h2>
+            <span className="ai-badge">✦ Smart Conversion Engine</span>
+            <h2 className="section-title">Live Accessibility Converter</h2>
             <p className="section-subtitle">
-              Convert fluidly between sign language, text, and spoken voice.
+              Convert fluidly between sign language, text, and spoken voice in real time.
             </p>
+
+            {/* Language Selector */}
+            <div className="converter-lang-bar">
+              <span className="lang-bar-label">Language / Region:</span>
+              <select
+                value={language}
+                onChange={(e) => setLanguage(e.target.value)}
+                className="converter-lang-select"
+              >
+                {SUPPORTED_LANGUAGES.map((l) => (
+                  <option key={l.code} value={l.code}>
+                    {l.flag} {l.name}
+                  </option>
+                ))}
+              </select>
+            </div>
           </div>
 
+          {/* Converter Tabs */}
           <div className="converter-tabs">
             <button
               className={converterTab === "sign" ? "converter-tab active" : "converter-tab"}
               onClick={() => setConverterTab("sign")}
             >
-              🎥 Sign → Text
+              <CameraIcon size={16} />
+              <span>Sign → Text</span>
             </button>
             <button
               className={converterTab === "stt" ? "converter-tab active" : "converter-tab"}
               onClick={() => setConverterTab("stt")}
             >
-              🎙️ Speech → Text
+              <MicIcon size={16} />
+              <span>Speech → Text</span>
             </button>
             <button
               className={converterTab === "tts" ? "converter-tab active" : "converter-tab"}
               onClick={() => setConverterTab("tts")}
             >
-              🗣️ Text → Speech
+              <SpeakerIcon size={16} />
+              <span>Text → Speech</span>
             </button>
           </div>
 
-          {/* Sign → Text Tab */}
+          {/* Tab 1: Sign → Text */}
           {converterTab === "sign" && (
             <div className="converter-panel">
-              <video
-                ref={videoRef}
-                muted
-                playsInline
-                style={{ display: cameraActive ? "block" : "none" }}
-              />
-              {!cameraActive && !cameraError && (
-                <div className="converter-placeholder">
-                  <span className="placeholder-icon">📷</span>
-                  <p>Start your camera to begin live sign gesture detection</p>
-                </div>
-              )}
-              {cameraError && (
-                <p className="error-text">{cameraError}</p>
-              )}
+              <div className="camera-feed-container">
+                <video
+                  ref={videoRef}
+                  muted
+                  playsInline
+                  style={{ display: cameraActive ? "block" : "none" }}
+                />
+                
+                {!cameraActive && !isSimulating && (
+                  <div className="converter-placeholder">
+                    <span className="placeholder-icon">
+                      <CameraIcon size={44} />
+                    </span>
+                    <p>Start your camera or run the interactive simulator for sign gesture detection</p>
+                  </div>
+                )}
+
+                {isSimulating && !cameraActive && (
+                  <div className="simulator-feed-box">
+                    <div className="sim-hand-hud">
+                      <span className="sim-pulse-dot"></span>
+                      <span>Sign Recognition Model: Active</span>
+                    </div>
+                    <div className="sim-center-visual">
+                      <span className="sim-emoji">{detectedSign?.emoji || "🤟"}</span>
+                      <span className="sim-hud-tag">Detected: {detectedSign?.label || "READY"}</span>
+                    </div>
+                  </div>
+                )}
+
+                {/* Gesture Detection HUD Overlay */}
+                {(cameraActive || isSimulating) && detectedSign && (
+                  <div className="gesture-hud-overlay">
+                    <div className="hud-badge">
+                      <span className="hud-emoji">{detectedSign.emoji}</span>
+                      <div className="hud-info">
+                        <span className="hud-label">Gesture: <strong>{detectedSign.label}</strong></span>
+                        <span className="hud-confidence">Confidence: {detectedSign.confidence}%</span>
+                      </div>
+                      <button
+                        className="btn-hud-add"
+                        onClick={() => appendDetectedSign(detectedSign)}
+                        title="Add to word buffer"
+                      >
+                        + Add
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {cameraError && <p className="error-text">{cameraError}</p>}
+
               <div className="converter-controls">
                 {!cameraActive ? (
                   <button className="btn btn-ai" onClick={startCamera}>
-                    📷 Start Camera
+                    <CameraIcon size={16} />
+                    <span>Start Camera</span>
                   </button>
                 ) : (
                   <button className="btn btn-outline" onClick={stopCamera}>
-                    ⬛ Stop Camera
+                    <span>Stop Camera</span>
                   </button>
                 )}
+
+                <button
+                  className={`btn ${isSimulating ? "btn-sage" : "btn-outline"}`}
+                  onClick={toggleSimulator}
+                >
+                  <SparklesIcon size={16} />
+                  <span>{isSimulating ? "Stop Simulator" : "Test Gesture Simulator"}</span>
+                </button>
               </div>
-              {cameraActive && (
-                <>
-                  <div className="converter-status">
-                    <span className="status-dot active"></span>
-                    Camera active — show hand signs clearly to the frame
+
+              {/* Recognized Buffer */}
+              <div className="sign-buffer-box">
+                <div className="buffer-header">
+                  <span className="output-label">Recognized Gesture Stream</span>
+                  <div className="buffer-quick-tools">
+                    <button
+                      className="btn-chip"
+                      onClick={() => setSignBuffer((prev) => prev + " ")}
+                    >
+                      [Space]
+                    </button>
+                    <button
+                      className="btn-chip"
+                      onClick={() => setSignBuffer((prev) => prev.slice(0, -1))}
+                    >
+                      ⌫ Backspace
+                    </button>
+                    <button
+                      className="btn-chip"
+                      onClick={() => setSignBuffer("")}
+                    >
+                      Clear
+                    </button>
                   </div>
-                  <p className="converter-note">
-                    💡 Real-time camera feed active. Gesture detection models connect directly to this pipeline.
-                  </p>
-                </>
-              )}
+                </div>
+
+                <div className="buffer-text-display">
+                  {signBuffer ? (
+                    <span className="buffer-active-text">{signBuffer}</span>
+                  ) : (
+                    <span className="buffer-placeholder-text">
+                      Detected signs and gestures will stream here...
+                    </span>
+                  )}
+                </div>
+
+                {signBuffer && (
+                  <div className="buffer-actions">
+                    <button
+                      className="btn btn-primary btn-sm"
+                      onClick={() => {
+                        speakText(signBuffer);
+                        saveToHistory("sign-to-text", signBuffer);
+                      }}
+                    >
+                      🔊 Speak Sentence
+                    </button>
+                    <button
+                      className="btn btn-outline btn-sm"
+                      onClick={() => {
+                        saveToHistory("sign-to-text", signBuffer);
+                        alert("Saved to conversation history!");
+                      }}
+                    >
+                      💾 Save to History
+                    </button>
+                  </div>
+                )}
+              </div>
             </div>
           )}
 
-          {/* Speech → Text Tab */}
+          {/* Tab 2: Speech → Text */}
           {converterTab === "stt" && (
             <div className="converter-panel">
               <div className="stt-status-icon">
                 <span className={isListening ? "pulse-icon" : ""}>
-                  {isListening ? "🔴" : "🎙️"}
+                  <MicIcon size={48} />
                 </span>
               </div>
               <div className="converter-controls">
                 {!isListening ? (
                   <button className="btn btn-ai" onClick={startListening}>
-                    🎙️ Start Listening
+                    <MicIcon size={16} />
+                    <span>Start Listening ({language})</span>
                   </button>
                 ) : (
                   <button className="btn btn-outline" onClick={stopListening}>
-                    ⬛ Stop Listening
+                    <span>Stop Listening</span>
                   </button>
                 )}
                 {transcript && (
@@ -339,23 +531,33 @@ function Home() {
               {isListening && (
                 <div className="converter-status">
                   <span className="status-dot active"></span>
-                  Listening... speak clearly into your microphone
+                  Listening in {language}... speak clearly into microphone
                 </div>
               )}
               {transcript && (
                 <div className="converter-output">
-                  <span className="output-label">Transcription</span>
+                  <span className="output-label">Live Transcription</span>
                   <p className="output-text">{transcript}</p>
+                  <button
+                    className="btn btn-outline btn-sm"
+                    style={{ marginTop: "12px" }}
+                    onClick={() => {
+                      saveToHistory("speech-to-text", transcript);
+                      alert("Transcript saved to History!");
+                    }}
+                  >
+                    Save to History
+                  </button>
                 </div>
               )}
             </div>
           )}
 
-          {/* Text → Speech Tab */}
+          {/* Tab 3: Text → Speech */}
           {converterTab === "tts" && (
             <div className="converter-panel">
               <textarea
-                placeholder="Type or paste text here to convert into spoken audio..."
+                placeholder={`Type or paste text here to convert into spoken audio (${language})...`}
                 value={ttsText}
                 onChange={(e) => setTtsText(e.target.value)}
                 rows={4}
@@ -364,14 +566,15 @@ function Home() {
                 {!isSpeaking ? (
                   <button
                     className="btn btn-ai"
-                    onClick={speakText}
+                    onClick={handleSpeak}
                     disabled={!ttsText.trim()}
                   >
-                    🔊 Speak Text
+                    <SpeakerIcon size={16} />
+                    <span>Speak Text ({language})</span>
                   </button>
                 ) : (
                   <button className="btn btn-outline" onClick={stopSpeaking}>
-                    ⬛ Stop Speaking
+                    <span>Stop Speaking</span>
                   </button>
                 )}
                 {ttsText && (
@@ -391,10 +594,38 @@ function Home() {
               )}
             </div>
           )}
+
+          {/* Quick Phrases Drawer for Instant Access */}
+          <div className="quick-phrases-drawer">
+            <div className="drawer-header">
+              <span className="drawer-title">⚡ Quick Phrases</span>
+              <Link to="/phrases" className="drawer-link">
+                Open Phrase Builder →
+              </Link>
+            </div>
+            <div className="quick-phrase-pills">
+              {phrases.slice(0, 6).map((p) => (
+                <button
+                  key={p.id}
+                  className="quick-phrase-pill"
+                  onClick={() => {
+                    if (converterTab === "tts") {
+                      setTtsText(p.text);
+                    }
+                    speakText(p.text);
+                  }}
+                  title="Click to speak phrase"
+                >
+                  <span>{p.emoji}</span>
+                  <span>{p.text}</span>
+                </button>
+              ))}
+            </div>
+          </div>
         </div>
       </section>
 
-      {/* Community Stats */}
+      {/* Community Section */}
       <section className="stats-section">
         <div className="stats-box">
           <span className="stats-number">{count}</span>

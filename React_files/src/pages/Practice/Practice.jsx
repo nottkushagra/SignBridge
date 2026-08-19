@@ -114,13 +114,20 @@ function Practice() {
   }
 
   useEffect(() => {
-    if (speedActive && speedTimer > 0) {
-      speedTimerRef.current = setTimeout(() => setSpeedTimer(speedTimer - 1), 1000);
+    if (!speedActive) return;
+    if (speedTimer <= 0) {
+      return;
     }
-    if (speedActive && speedTimer === 0) {
-      setSpeedActive(false);
-      setMode("speed-done");
-    }
+    speedTimerRef.current = setTimeout(() => {
+      setSpeedTimer((prev) => {
+        if (prev <= 1) {
+          setSpeedActive(false);
+          setMode("speed-done");
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
     return () => clearTimeout(speedTimerRef.current);
   }, [speedActive, speedTimer]);
 
@@ -138,14 +145,18 @@ function Practice() {
   }
 
   // Fingerspelling
+  const [spellQueue, setSpellQueue] = useState([]);
+  const [spellWordIndex, setSpellWordIndex] = useState(0);
   const [spellWord, setSpellWord] = useState("");
   const [spellLetterIndex, setSpellLetterIndex] = useState(0);
   const [spellCorrect, setSpellCorrect] = useState(0);
   const [spellWordsDone, setSpellWordsDone] = useState(0);
 
   function startSpelling() {
-    const word = practiceWords[Math.floor(Math.random() * practiceWords.length)];
-    setSpellWord(word);
+    const queue = shuffle(practiceWords).slice(0, 5);
+    setSpellQueue(queue);
+    setSpellWordIndex(0);
+    setSpellWord(queue[0]);
     setSpellLetterIndex(0);
     setSpellCorrect(0);
     setSpellWordsDone(0);
@@ -160,12 +171,14 @@ function Practice() {
     if (spellLetterIndex + 1 < spellWord.length) {
       setSpellLetterIndex(spellLetterIndex + 1);
     } else {
-      setSpellWordsDone(spellWordsDone + 1);
-      if (spellWordsDone + 1 >= 5) {
+      const nextDone = spellWordsDone + 1;
+      setSpellWordsDone(nextDone);
+      if (nextDone >= 5 || spellWordIndex + 1 >= spellQueue.length) {
         setMode("spell-done");
       } else {
-        const next = practiceWords[Math.floor(Math.random() * practiceWords.length)];
-        setSpellWord(next);
+        const nextWord = spellQueue[spellWordIndex + 1];
+        setSpellWordIndex(spellWordIndex + 1);
+        setSpellWord(nextWord);
         setSpellLetterIndex(0);
       }
     }

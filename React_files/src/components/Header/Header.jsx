@@ -1,10 +1,13 @@
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
+import { useApp } from "../../context/useApp";
+import { SunIcon, MoonIcon, DiningIcon } from "../Icons/Icons";
 import "./Header.css";
 
 function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
   const location = useLocation();
+  const { theme, toggleTheme, userRole, setUserRole } = useApp();
 
   const isActive = (path) => location.pathname === path;
 
@@ -19,22 +22,53 @@ function Header() {
           </span>
         </Link>
 
-        <button
-          className={menuOpen ? "burger open" : "burger"}
-          onClick={() => setMenuOpen(!menuOpen)}
-          aria-label="Toggle navigation menu"
-        >
-          <span></span>
-          <span></span>
-          <span></span>
-        </button>
+        {/* Global Controls: Role Switcher & Theme Toggle */}
+        <div className="header-controls-group">
+          <div className="role-switcher" role="radiogroup" aria-label="User Mode">
+            <button
+              className={`role-btn ${userRole === "deaf" ? "active" : ""}`}
+              onClick={() => setUserRole("deaf")}
+              title="Deaf / Hard of Hearing User Mode (Visual cues & instant text phrases)"
+            >
+              <span className="role-icon">🧏</span>
+              <span className="role-label">Deaf</span>
+            </button>
+            <button
+              className={`role-btn ${userRole === "hearing" ? "active" : ""}`}
+              onClick={() => setUserRole("hearing")}
+              title="Hearing User Mode (Voice readout & sign recognition)"
+            >
+              <span className="role-icon">👂</span>
+              <span className="role-label">Hearing</span>
+            </button>
+          </div>
+
+          <button
+            className="theme-toggle-btn"
+            onClick={toggleTheme}
+            title={theme === "dark" ? "Switch to Light Mode" : "Switch to Dark Mode"}
+            aria-label="Toggle dark mode"
+          >
+            {theme === "dark" ? <SunIcon size={16} /> : <MoonIcon size={16} />}
+          </button>
+
+          <button
+            className={menuOpen ? "burger open" : "burger"}
+            onClick={() => setMenuOpen(!menuOpen)}
+            aria-label="Toggle navigation menu"
+          >
+            <span></span>
+            <span></span>
+            <span></span>
+          </button>
+        </div>
 
         <nav className={menuOpen ? "nav nav-open" : "nav"}>
           <ul className="nav-list">
             <li>
               <Link
                 to="/"
-                className={isActive("/") ? "nav-link active" : "nav-link"}
+                className={isActive("/") && location.hash !== "#convert" ? "nav-link active" : "nav-link"}
                 onClick={() => setMenuOpen(false)}
               >
                 Home
@@ -59,13 +93,22 @@ function Header() {
               </Link>
             </li>
             <li>
-              <a
-                href="/#convert"
-                className="nav-link"
+              <Link
+                to="/phrases"
+                className={isActive("/phrases") ? "nav-link active" : "nav-link"}
+                onClick={() => setMenuOpen(false)}
+              >
+                Phrases
+              </Link>
+            </li>
+            <li>
+              <Link
+                to={{ pathname: "/", hash: "#convert" }}
+                className={location.pathname === "/" && location.hash === "#convert" ? "nav-link active" : "nav-link"}
                 onClick={() => setMenuOpen(false)}
               >
                 Convert
-              </a>
+              </Link>
             </li>
             <li>
               <Link
@@ -82,8 +125,8 @@ function Header() {
                 className="nav-restaurant"
                 onClick={() => setMenuOpen(false)}
               >
-                <span>🍽️</span>
-                <span>Restaurant Mode</span>
+                <DiningIcon size={15} />
+                <span>Restaurant</span>
               </Link>
             </li>
           </ul>

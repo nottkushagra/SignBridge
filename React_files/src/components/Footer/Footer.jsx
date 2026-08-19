@@ -26,7 +26,8 @@ function Footer() {
             <li><Link to="/">Home</Link></li>
             <li><Link to="/learn">Learn</Link></li>
             <li><Link to="/practice">Practice</Link></li>
-            <li><a href="/#convert">Convert</a></li>
+            <li><Link to="/phrases">Phrase Builder</Link></li>
+            <li><Link to={{ pathname: "/", hash: "#convert" }}>Convert</Link></li>
             <li><Link to="/history">History</Link></li>
             <li><Link to="/restaurant">Restaurant Mode</Link></li>
           </ul>

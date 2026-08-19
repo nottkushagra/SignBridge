@@ -225,9 +225,43 @@
   opacity: 1;
 }
 
-.history-delete:hover {
-  color: var(--rose-deep);
-  background: var(--surface-warm);
+.history-lang-tag {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  font-weight: 600;
+  margin-left: 4px;
+}
+
+.history-card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 14px;
+  border-top: 1px solid var(--border-light);
+  padding-top: 10px;
+}
+
+.history-footer-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.btn-history-tool {
+  background: var(--canvas);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 4px 10px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: var(--transition-fast);
+}
+
+.btn-history-tool:hover {
+  background: var(--surface-cool);
+  border-color: var(--brand-blue);
+  color: var(--text-primary);
 }
 
 /* --- Responsive --- */

@@ -1,34 +1,33 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Link } from "react-router-dom";
+import { useApp } from "../../context/useApp";
 import "./History.css";
 
 const typeBadges = {
+  "sign-to-text": { label: "Sign → Text", emoji: "🎥", color: "var(--sage-deep)" },
   "speech-to-text": { label: "Speech → Text", emoji: "🎙️", color: "var(--brand-blue)" },
   "text-to-speech": { label: "Text → Speech", emoji: "🗣️", color: "var(--lavender-deep)" },
   "restaurant-order": { label: "Restaurant", emoji: "🍽️", color: "var(--rose-deep)" },
 };
 
 function History() {
-  const [history, setHistory] = useState([]);
+  const { speakText } = useApp();
+  const [history, setHistory] = useState(() => {
+    try {
+      return JSON.parse(localStorage.getItem("signbridge-history") || "[]");
+    } catch {
+      return [];
+    }
+  });
   const [searchQuery, setSearchQuery] = useState("");
   const [filterType, setFilterType] = useState("all");
-
-  useEffect(() => {
-    loadHistory();
-  }, []);
-
-  function loadHistory() {
-    try {
-      const data = JSON.parse(localStorage.getItem("signbridge-history") || "[]");
-      setHistory(data);
-    } catch {
-      setHistory([]);
-    }
-  }
+  const [copiedId, setCopiedId] = useState(null);
 
   function clearHistory() {
-    localStorage.removeItem("signbridge-history");
-    setHistory([]);
+    if (window.confirm("Are you sure you want to clear all conversation history?")) {
+      localStorage.removeItem("signbridge-history");
+      setHistory([]);
+    }
   }
 
   function deleteEntry(id) {
@@ -37,12 +36,18 @@ function History() {
     localStorage.setItem("signbridge-history", JSON.stringify(updated));
   }
 
+  function copyEntry(id, content) {
+    navigator.clipboard.writeText(content);
+    setCopiedId(id);
+    setTimeout(() => setCopiedId(null), 1500);
+  }
+
   function exportHistory() {
     const text = history
       .map((h) => {
         const badge = typeBadges[h.type] || { label: h.type, emoji: "📝" };
         const date = new Date(h.timestamp).toLocaleString();
-        return `[${date}] ${badge.emoji} ${badge.label}: ${h.content}`;
+        return `[${date}] ${badge.emoji} ${badge.label} (${h.lang || "en-US"}): ${h.content}`;
       })
       .join("\n\n");
 
@@ -103,7 +108,7 @@ function History() {
               className={filterType === "all" ? "filter-btn active" : "filter-btn"}
               onClick={() => setFilterType("all")}
             >
-              All Types
+              All Types ({history.length})
             </button>
             {Object.entries(typeBadges).map(([key, val]) => (
               <button
@@ -136,11 +141,11 @@ function History() {
             <h3>No recorded history yet</h3>
             <p>
               {history.length === 0
-                ? "Use the Live Converter or Restaurant Mode to build your communication history."
+                ? "Use the Live Converter, Custom Phrases, or Restaurant Mode to build your communication history."
                 : "No saved items match your active search or filter."}
             </p>
             {history.length === 0 && (
-              <Link to="/#convert" className="btn btn-primary history-cta-btn">
+              <Link to={{ pathname: "/", hash: "#convert" }} className="btn btn-primary history-cta-btn">
                 Open Live Converter
               </Link>
             )}
@@ -159,17 +164,39 @@ function History() {
                     <span className="history-type-badge">
                       <span className="badge-emoji">{badge.emoji}</span>
                       <span>{badge.label}</span>
+                      {entry.lang && <span className="history-lang-tag">[{entry.lang}]</span>}
                     </span>
                     <span className="history-time">{formatTime(entry.timestamp)}</span>
                   </div>
                   <p className="history-content">{entry.content}</p>
-                  <button
-                    className="history-delete"
-                    onClick={() => deleteEntry(entry.id)}
-                    aria-label="Delete entry"
-                  >
-                    ✕
-                  </button>
+
+                  <div className="history-card-footer">
+                    <div className="history-footer-actions">
+                      <button
+                        className="btn-history-tool"
+                        onClick={() => speakText(entry.content, entry.lang)}
+                        title="Replay audio"
+                      >
+                        🔊 Speak
+                      </button>
+                      <button
+                        className="btn-history-tool"
+                        onClick={() => copyEntry(entry.id, entry.content)}
+                        title="Copy text"
+                      >
+                        {copiedId === entry.id ? "✓ Copied" : "📋 Copy"}
+                      </button>
+                    </div>
+
+                    <button
+                      className="history-delete"
+                      onClick={() => deleteEntry(entry.id)}
+                      aria-label="Delete entry"
+                      title="Delete entry"
+                    >
+                      ✕
+                    </button>
+                  </div>
                 </div>
               );
             })}
