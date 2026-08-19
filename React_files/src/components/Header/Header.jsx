@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useApp } from "../../context/useApp";
-import { SunIcon, MoonIcon, DiningIcon } from "../Icons/Icons";
+import { SunIcon, MoonIcon, DiningIcon, HandSignIcon } from "../Icons/Icons";
 import "./Header.css";
 
 function Header() {
