@@ -1,6 +1,6 @@
 # SignBridge
 
-🌐 **Live Demo**: [signbridge-one.vercel.app](https://signbridge-one.vercel.app)
+🌐 **Live Demo**: [nottkushagra.github.io/SignBridge](https://nottkushagra.github.io/SignBridge/) &nbsp;|&nbsp; [signbridge-one.vercel.app](https://signbridge-one.vercel.app)
 
 SignBridge is an inclusive communication platform designed to eliminate barriers between deaf/mute individuals and the hearing community. It leverages modern technologies like computer vision, speech processing, and natural language systems to enable seamless, real-time interaction.
 
