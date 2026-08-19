@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link } from 'react-router-dom';
+import { MessageSquareIcon, DiningIcon, CameraIcon, MicIcon, SpeakerIcon, HandSignIcon, SparklesIcon } from '../../components/Icons/Icons';
 import { useApp } from "../../context/useApp";
 import { SUPPORTED_LANGUAGES } from "../../context/constants";
 import "./Phrases.css";
@@ -132,7 +133,7 @@ function Phrases() {
           ← Back to Home
         </Link>
         <div className="hero-pill-badge">
-          <span>💬</span> Custom Phrase Builder
+           Custom Phrase Builder
         </div>
         <h1>Instant Accessible Phrases</h1>
         <p>

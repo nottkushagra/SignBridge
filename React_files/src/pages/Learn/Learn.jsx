@@ -1,5 +1,6 @@
 import { useState, useMemo } from "react";
-import { Link } from "react-router-dom";
+import { Link } from 'react-router-dom';
+import { BookIcon, PlayIcon, GraduationCapIcon, SearchIcon, HandSignIcon, CloseIcon, HistoryIcon, TargetIcon, SparklesIcon, ExternalLinkIcon } from '../../components/Icons/Icons';
 import "./Learn.css";
 
 // Import all ASL sign images
@@ -42,71 +43,33 @@ const signImages = {
 // Comprehensive ASL University course database (Lifeprint.com - Dr. Bill Vicars)
 const aslCourses = [
   {
-    level: "ASL 1",
-    title: "Introduction to ASL",
-    emoji: "🟢",
-    description: "Foundational vocabulary, grammar principles, fingerspelling, numbers 1-20, and cultural insights for beginners.",
+    level: "Beginner",
+    title: "ASL Foundations",
+    description: "Foundational vocabulary, grammar principles, fingerspelling, numbers 1-20, and cultural insights.",
     color: "#71816B",
     lessons: [
-      { number: 1, title: "Introductions & Greetings", vocab: ["HELLO", "NAME", "NICE-TO-MEET-YOU", "AGAIN", "DEAF", "HEARING", "STUDENT", "TEACHER", "WHERE", "WHAT"], videoId: "kCKFF0Berc8", url: "https://www.lifeprint.com/asl101/lessons/lesson01.htm" },
-      { number: 2, title: "Family & People", vocab: ["MOTHER", "FATHER", "SISTER", "BROTHER", "BABY", "FAMILY", "GRANDMOTHER", "GRANDFATHER", "MARRY", "DIVORCE"], videoId: "daM_3e226a0", url: "https://www.lifeprint.com/asl101/lessons/lesson02.htm" },
-      { number: 3, title: "Colors & Descriptions", vocab: ["COLOR", "RED", "BLUE", "GREEN", "YELLOW", "ORANGE", "BLACK", "WHITE", "BROWN", "PURPLE", "PINK"], videoId: "5K4k0846v-Q", url: "https://www.lifeprint.com/asl101/lessons/lesson03.htm" },
-      { number: 4, title: "Food & Drinks", vocab: ["EAT", "FOOD", "DRINK", "WATER", "MILK", "COFFEE", "TEA", "APPLE", "BREAD", "CHEESE", "HUNGRY"], videoId: "GZtZ3eC3Fbg", url: "https://www.lifeprint.com/asl101/lessons/lesson04.htm" },
-      { number: 5, title: "School & Education", vocab: ["SCHOOL", "COLLEGE", "LEARN", "CLASS", "BOOK", "READ", "WRITE", "TEST", "PRACTICE", "UNDERSTAND"], videoId: "uU0QGqE7tW8", url: "https://www.lifeprint.com/asl101/lessons/lesson05.htm" },
-      { number: 6, title: "Numbers & Counting", vocab: ["NUMBER", "COUNT", "1-20", "HOW-MANY", "FIRST", "LAST", "MORE", "LESS", "NONE", "ALL"], videoId: "X8yG4pZ5xL4", url: "https://www.lifeprint.com/asl101/lessons/lesson06.htm" },
-      { number: 7, title: "Time & Scheduling", vocab: ["TIME", "HOUR", "MINUTE", "DAY", "NIGHT", "MORNING", "AFTERNOON", "TODAY", "TOMORROW", "YESTERDAY"], videoId: "6_0zC-kYq3Q", url: "https://www.lifeprint.com/asl101/lessons/lesson07.htm" },
-      { number: 8, title: "Days of the Week", vocab: ["MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY", "SUNDAY", "WEEK", "WEEKEND"], videoId: "6_0zC-kYq3Q", url: "https://www.lifeprint.com/asl101/lessons/lesson08.htm" },
-      { number: 9, title: "Questions & Pronouns", vocab: ["WHO", "WHAT", "WHERE", "WHEN", "WHY", "HOW", "WHICH", "YOU", "ME", "THEM"], videoId: "o36e8x8tQz4", url: "https://www.lifeprint.com/asl101/lessons/lesson09.htm" },
-      { number: 10, title: "Feelings & Emotions", vocab: ["HAPPY", "SAD", "ANGRY", "EXCITED", "TIRED", "SCARED", "FINE", "SO-SO", "BORED", "FEEL"], videoId: "2f8_0w3J2eA", url: "https://www.lifeprint.com/asl101/lessons/lesson10.htm" },
-      { number: 11, title: "Places & Navigation", vocab: ["HOME", "WORK", "STORE", "RESTAURANT", "HOSPITAL", "BATHROOM", "GO-TO", "COME-HERE", "IN", "OUT"], videoId: "d0z89_7fQcE", url: "https://www.lifeprint.com/asl101/lessons/lesson11.htm" },
-      { number: 12, title: "Weather & Seasons", vocab: ["WEATHER", "RAIN", "SNOW", "SUNNY", "WIND", "HOT", "COLD", "WARM", "COOL", "SPRING", "SUMMER"], videoId: "3e_f0q89a2b", url: "https://www.lifeprint.com/asl101/lessons/lesson12.htm" },
-      { number: 13, title: "Clothing & Items", vocab: ["SHIRT", "PANTS", "SHOES", "COAT", "HAT", "DRESS", "GLASSES", "WEAR", "BUY", "CLEAN"], videoId: "g9z_0k3f910", url: "https://www.lifeprint.com/asl101/lessons/lesson13.htm" },
-      { number: 14, title: "Animals & Nature", vocab: ["DOG", "CAT", "BIRD", "FISH", "HORSE", "BEAR", "TURTLE", "TREE", "FLOWER", "GRASS"], videoId: "p10v_8qwe9a", url: "https://www.lifeprint.com/asl101/lessons/lesson14.htm" },
-      { number: 15, title: "ASL 1 Comprehensive Review", vocab: ["FULL DIALOGUES", "STORYTELLING", "GRAMMAR QUIZ", "MASTERY DRILL"], videoId: "ianCwt4ye1g", url: "https://www.lifeprint.com/asl101/lessons/lesson15.htm" },
+      { number: 1, title: "Introductions & Greetings", vocab: ["HELLO", "NAME", "NICE-TO-MEET-YOU"], videoId: "kCKFF0Berc8", url: "https://www.lifeprint.com/asl101/lessons/lesson01.htm" },
+      { number: 2, title: "Family & People", vocab: ["MOTHER", "FATHER", "SISTER", "BROTHER"], videoId: "daM_3e226a0", url: "https://www.lifeprint.com/asl101/lessons/lesson02.htm" },
+      { number: 3, title: "Colors & Descriptions", vocab: ["COLOR", "RED", "BLUE", "GREEN"], videoId: "5K4k0846v-Q", url: "https://www.lifeprint.com/asl101/lessons/lesson03.htm" },
+      { number: 4, title: "Food & Drinks", vocab: ["EAT", "FOOD", "DRINK", "WATER"], videoId: "GZtZ3eC3Fbg", url: "https://www.lifeprint.com/asl101/lessons/lesson04.htm" },
+      { number: 5, title: "School & Education", vocab: ["SCHOOL", "LEARN", "PRACTICE", "UNDERSTAND"], videoId: "uU0QGqE7tW8", url: "https://www.lifeprint.com/asl101/lessons/lesson05.htm" },
+      { number: 6, title: "Numbers & Counting", vocab: ["NUMBER", "COUNT", "HOW-MANY"], videoId: "X8yG4pZ5xL4", url: "https://www.lifeprint.com/asl101/lessons/lesson06.htm" },
     ],
   },
   {
-    level: "ASL 2",
-    title: "Intermediate ASL",
-    emoji: "🔵",
+    level: "Intermediate",
+    title: "Conversational ASL",
     description: "Complex sentence structure, directional verbs, classifier handshapes, and conversational idioms.",
     color: "#6F8790",
-    lessons: Array.from({ length: 15 }, (_, i) => ({
-      number: i + 16,
-      title: `Lesson ${i + 16} — Intermediate Fluency & Grammar`,
-      vocab: ["DIRECTIONAL VERBS", "SPATIAL REFERENCING", "CONDITIONAL CLAUSES", "INTERPRETER DRILL"],
-      videoId: "w49_kZ8m_20",
-      url: `https://www.lifeprint.com/asl101/lessons/lesson${i + 16}.htm`,
-    })),
-  },
-  {
-    level: "ASL 3",
-    title: "Advanced Foundations",
-    emoji: "🟣",
-    description: "Non-manual signals, thematic dialogues, Deaf heritage, storytelling, and rapid receptive fingerspelling.",
-    color: "#8D7E9F",
-    lessons: Array.from({ length: 15 }, (_, i) => ({
-      number: i + 31,
-      title: `Lesson ${i + 31} — Advanced Classifiers & Non-Manuals`,
-      vocab: ["TOPICALIZATION", "ROLE SHIFTING", "BODY PART CLASSIFIERS", "RHETORICAL QUESTIONS"],
-      videoId: "m2_vQ91kLa8",
-      url: `https://www.lifeprint.com/asl101/lessons/lesson${i + 31}.htm`,
-    })),
-  },
-  {
-    level: "ASL 4",
-    title: "Mastery & Professional ASL",
-    emoji: "🔴",
-    description: "Professional registers, medical/legal terminology, translation mechanics, and Deaf culture nuances.",
-    color: "#B9796F",
-    lessons: Array.from({ length: 15 }, (_, i) => ({
-      number: i + 46,
-      title: `Lesson ${i + 46} — Professional Terminology & Dialects`,
-      vocab: ["LEGAL/MEDICAL ASL", "REGIONAL VARIATIONS", "POETRY/LITERATURE", "MASTERY FLUENCY"],
-      videoId: "yQ_K6_rU6yE",
-      url: `https://www.lifeprint.com/asl101/lessons/lesson${i + 46}.htm`,
-    })),
-  },
+    lessons: [
+      { number: 7, title: "Questions & Pronouns", vocab: ["WHO", "WHAT", "WHERE", "WHEN", "WHY"], videoId: "o36e8x8tQz4", url: "https://www.lifeprint.com/asl101/lessons/lesson09.htm" },
+      { number: 8, title: "Time & Scheduling", vocab: ["TIME", "DAY", "MORNING", "TOMORROW"], videoId: "6_0zC-kYq3Q", url: "https://www.lifeprint.com/asl101/lessons/lesson07.htm" },
+      { number: 9, title: "Places & Navigation", vocab: ["HOME", "WORK", "STORE", "GO-TO"], videoId: "d0z89_7fQcE", url: "https://www.lifeprint.com/asl101/lessons/lesson11.htm" },
+      { number: 10, title: "Food & Restaurant", vocab: ["RESTAURANT", "ORDER", "HUNGRY", "MENU"], videoId: "GZtZ3eC3Fbg", url: "https://www.lifeprint.com/asl101/lessons/lesson04.htm" },
+      { number: 11, title: "School Conversation", vocab: ["TEACHER", "STUDENT", "CLASS", "TEST"], videoId: "uU0QGqE7tW8", url: "https://www.lifeprint.com/asl101/lessons/lesson05.htm" },
+      { number: 12, title: "Weather & Seasons", vocab: ["WEATHER", "RAIN", "HOT", "COLD"], videoId: "3e_f0q89a2b", url: "https://www.lifeprint.com/asl101/lessons/lesson12.htm" },
+    ]
+  }
 ];
 
 // Massive Video Tutorials Database (30+ High-Quality Curated Videos)
@@ -475,14 +438,14 @@ function Learn() {
 
   // Daily word
   const words = [
-    { word: "Hello", emoji: "👋", gloss: "WAVE HAND", desc: "Open hand palm facing outward waving gently near temple." },
-    { word: "Thank You", emoji: "🙏", gloss: "CHIN FORWARD", desc: "Flat fingertips touch chin, then open forward toward the person." },
-    { word: "Please", emoji: "🤲", gloss: "CHEST CIRCLE", desc: "Flat hand rubs clockwise in circles over heart/center of chest." },
-    { word: "Sorry", emoji: "😔", gloss: "FIST CIRCLE", desc: "'A' fist rubs clockwise circular motion on chest with remorseful expression." },
-    { word: "Yes", emoji: "✅", gloss: "S-HAND NOD", desc: "'S' fist nods up and down imitating head nod motion." },
-    { word: "No", emoji: "❌", gloss: "THREE FINGERS SNAP", desc: "Index and middle finger snap down onto thumb." },
-    { word: "Help", emoji: "🆘", gloss: "FIST ON PALM UP", desc: "Closed fist with thumb up rests on open flat palm, lifted upwards." },
-    { word: "Friend", emoji: "🤝", gloss: "HOOKED INDEX", desc: "Index fingers interlock in reciprocal hooks." },
+    { word: "Hello",  gloss: "WAVE HAND", desc: "Open hand palm facing outward waving gently near temple." },
+    { word: "Thank You",  gloss: "CHIN FORWARD", desc: "Flat fingertips touch chin, then open forward toward the person." },
+    { word: "Please",  gloss: "CHEST CIRCLE", desc: "Flat hand rubs clockwise in circles over heart/center of chest." },
+    { word: "Sorry",  gloss: "FIST CIRCLE", desc: "'A' fist rubs clockwise circular motion on chest with remorseful expression." },
+    { word: "Yes",  gloss: "S-HAND NOD", desc: "'S' fist nods up and down imitating head nod motion." },
+    { word: "No",  gloss: "THREE FINGERS SNAP", desc: "Index and middle finger snap down onto thumb." },
+    { word: "Help",  gloss: "FIST ON PALM UP", desc: "Closed fist with thumb up rests on open flat palm, lifted upwards." },
+    { word: "Friend",  gloss: "HOOKED INDEX", desc: "Index fingers interlock in reciprocal hooks." },
   ];
   const [wordIndex, setWordIndex] = useState(0);
 
@@ -606,7 +569,7 @@ function Learn() {
                   onClick={() => setExpandedCourse(expandedCourse === index ? null : index)}
                 >
                   <div className="course-header-left">
-                    <span className="course-emoji">{course.emoji}</span>
+                    <span className="course-emoji"><GraduationCapIcon size={24} /></span>
                     <div>
                       <div className="course-title-row">
                         <span className="course-level" style={{ backgroundColor: `${course.color}22`, color: course.color }}>
@@ -684,7 +647,7 @@ function Learn() {
               />
               {searchQuery && (
                 <button className="search-clear" onClick={() => setSearchQuery("")}>
-                  ✕
+                  <CloseIcon size={16} />
                 </button>
               )}
             </div>
@@ -743,7 +706,7 @@ function Learn() {
 
           {filteredTutorials.length === 0 && (
             <div className="no-videos-found">
-              <span className="no-video-icon">🔍</span>
+              <span className="no-video-icon"><SearchIcon size={48} /></span>
               <h3>No tutorials matched "{searchQuery}"</h3>
               <p>Try searching for words like "alphabet", "restaurant", "grammar", or clear your filter.</p>
               <button className="btn btn-sage" onClick={() => { setSearchQuery(""); setSelectedCategory("All"); }}>
@@ -757,7 +720,7 @@ function Learn() {
         <section className="learn-section">
           <div className="section-header-center">
             <span className="badge badge-sage">Interactive Alphabet</span>
-            <h2>🔤 A–Z Fingerspelling Studio</h2>
+            <h2>A–Z Fingerspelling Studio</h2>
             <p className="section-subtitle">
               Click any letter to inspect the exact tactile hand shape, thumb placement, and wrist rotation.
             </p>
@@ -798,7 +761,7 @@ function Learn() {
             <div className="daily-word-card">
               <span className="badge badge-rose">Word of the Day</span>
               <div className="daily-word-content">
-                <span className="daily-word-emoji">{words[wordIndex].emoji}</span>
+                <span className="daily-word-emoji"><HandSignIcon size={48} /></span>
                 <h3>{words[wordIndex].word}</h3>
                 <div className="daily-word-gloss">
                   <strong>ASL Gloss:</strong> {words[wordIndex].gloss}
@@ -819,9 +782,7 @@ function Learn() {
               <div className="quiz-box">
                 {quizDone ? (
                   <div className="quiz-result">
-                    <span className="quiz-result-emoji">
-                      {score >= 4 ? "🎉" : score >= 2 ? "👍" : "💪"}
-                    </span>
+                    <span className="quiz-result-emoji"><TargetIcon size={48} /></span>
                     <h3>Knowledge Check Complete!</h3>
                     <p className="quiz-score">
                       You scored <strong>{score}</strong> out of {quizQuestions.length} correct
@@ -849,7 +810,7 @@ function Learn() {
                             prefix = "✓ ";
                           } else if (index === selectedAnswer) {
                             btnClass = "quiz-option wrong";
-                            prefix = "✕ ";
+                            prefix = "<CloseIcon size={16} /> ";
                           }
                         }
                         return (
@@ -888,7 +849,7 @@ function Learn() {
                 <h2>Lesson {selectedLessonModal.number}: {selectedLessonModal.title}</h2>
               </div>
               <button className="modal-close-btn" onClick={() => setSelectedLessonModal(null)}>
-                ✕
+                <CloseIcon size={16} />
               </button>
             </div>
 
@@ -946,7 +907,7 @@ function Learn() {
                 <p className="modal-channel-sub">{activeVideoModal.channel} • {activeVideoModal.duration}</p>
               </div>
               <button className="modal-close-btn" onClick={() => setActiveVideoModal(null)}>
-                ✕
+                <CloseIcon size={16} />
               </button>
             </div>
 
@@ -971,7 +932,7 @@ function Learn() {
         <div className="modal-backdrop" onClick={closeSignModal}>
           <div className="modal-window letter-modal" onClick={(e) => e.stopPropagation()}>
             <button className="modal-close-btn" onClick={closeSignModal}>
-              ✕
+              <CloseIcon size={16} />
             </button>
             <div className="letter-modal-content">
               <img

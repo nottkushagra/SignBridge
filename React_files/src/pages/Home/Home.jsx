@@ -2,19 +2,19 @@ import { useState, useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useApp } from "../../context/useApp";
 import { SUPPORTED_LANGUAGES } from "../../context/constants";
-import { CameraIcon, MicIcon, SpeakerIcon, SparklesIcon } from "../../components/Icons/Icons";
+import { CameraIcon, MicIcon, SpeakerIcon, SparklesIcon, HandSignIcon, DiningIcon, HistoryIcon, PlayIcon } from "../../components/Icons/Icons";
 import "./Home.css";
 
 // Common sign words for gesture recognition simulation
 const COMMON_GESTURES = [
-  { label: "HELLO", confidence: 97, emoji: "👋" },
-  { label: "THANK YOU", confidence: 95, emoji: "🙏" },
-  { label: "YES", confidence: 98, emoji: "👍" },
-  { label: "NO", confidence: 94, emoji: "👎" },
-  { label: "I LOVE YOU", confidence: 99, emoji: "🤟" },
-  { label: "HELP", confidence: 96, emoji: "🆘" },
-  { label: "PEACE", confidence: 98, emoji: "✌️" },
-  { label: "PLEASE", confidence: 92, emoji: "🤲" },
+  { label: "HELLO", confidence: 97 },
+  { label: "THANK YOU", confidence: 95 },
+  { label: "YES", confidence: 98 },
+  { label: "NO", confidence: 94 },
+  { label: "I LOVE YOU", confidence: 99 },
+  { label: "HELP", confidence: 96 },
+  { label: "PEACE", confidence: 98 },
+  { label: "PLEASE", confidence: 92 },
 ];
 
 function Home() {
@@ -35,7 +35,7 @@ function Home() {
 
   // Sign → Text (camera & recognition)
   const videoRef = useRef(null);
-  const [cameraActive, setCameraActive] = useState(false);
+  const [cameraState, setCameraState] = useState("IDLE"); // "IDLE" | "REQUESTING" | "ACTIVE" | "ERROR"
   const [cameraError, setCameraError] = useState("");
   const [detectedSign, setDetectedSign] = useState(null);
   const [signBuffer, setSignBuffer] = useState("");
@@ -44,6 +44,7 @@ function Home() {
 
   // Speech → Text
   const [isListening, setIsListening] = useState(false);
+  const [sttError, setSttError] = useState("");
   const [transcript, setTranscript] = useState("");
   const recognitionRef = useRef(null);
 
@@ -71,20 +72,30 @@ function Home() {
 
   // ───── Camera & Gesture Detection Functions ─────
   async function startCamera() {
+    setCameraState("REQUESTING");
     setCameraError("");
     try {
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        throw new Error("Browser does not support camera access or requires HTTPS.");
+      }
       const stream = await navigator.mediaDevices.getUserMedia({
         video: { facingMode: "user", width: 480, height: 360 },
       });
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
-        videoRef.current.play();
+        await videoRef.current.play();
       }
-      setCameraActive(true);
+      setCameraState("ACTIVE");
       startGestureRecognitionLoop();
-    } catch {
-      setCameraError("Camera permission unavailable. You can use Interactive Gesture Simulator.");
-      setCameraActive(false);
+    } catch (err) {
+      if (err.name === "NotAllowedError") {
+        setCameraError("Camera access denied. Please allow camera permissions in your browser.");
+      } else if (err.name === "NotFoundError") {
+        setCameraError("No camera detected. Please ensure a camera is connected.");
+      } else {
+        setCameraError("Camera unavailable: " + err.message);
+      }
+      setCameraState("ERROR");
     }
   }
 
@@ -96,7 +107,7 @@ function Home() {
     if (animFrameRef.current) {
       cancelAnimationFrame(animFrameRef.current);
     }
-    setCameraActive(false);
+    setCameraState("IDLE");
     setDetectedSign(null);
   }
 
@@ -151,10 +162,11 @@ function Home() {
 
   // ───── Speech → Text ─────
   function startListening() {
+    setSttError("");
     const SpeechRecognition =
       window.SpeechRecognition || window.webkitSpeechRecognition;
     if (!SpeechRecognition) {
-      setTranscript("Speech recognition is not supported in your browser. (Try Chrome or Edge)");
+      setSttError("Speech recognition isn't supported in this browser. Try Chrome or Edge.");
       return;
     }
     const recognition = new SpeechRecognition();
@@ -171,7 +183,15 @@ function Home() {
     };
 
     recognition.onerror = (event) => {
-      setTranscript("Speech error: " + event.error);
+      if (event.error === "not-allowed") {
+        setSttError("Microphone access is required for Speech → Text. Please allow permissions.");
+      } else if (event.error === "no-speech") {
+        setSttError("No speech detected. Please try speaking again.");
+      } else if (event.error === "network") {
+        setSttError("Network error occurred during speech recognition.");
+      } else {
+        setSttError("Speech error: " + event.error);
+      }
       setIsListening(false);
     };
 
@@ -219,7 +239,9 @@ function Home() {
       {/* Role Announcement Bar */}
       <div className={`role-announcement-bar ${userRole === "deaf" ? "role-deaf" : "role-hearing"}`}>
         <div className="role-bar-inner">
-          <span className="role-bar-icon">{userRole === "deaf" ? "🧏" : "👂"}</span>
+          <span className="role-bar-icon">
+            {userRole === "deaf" ? <HandSignIcon size={16} /> : <SpeakerIcon size={16} />}
+          </span>
           <span className="role-bar-text">
             {userRole === "deaf"
               ? "Active Mode: Deaf / Hard of Hearing — Visual cues, live captions, and high-contrast cards prioritized."
@@ -266,7 +288,9 @@ function Home() {
           <div className="hero-shape hero-shape-mist"></div>
           <div className="hero-shape hero-shape-sage"></div>
           <div className="hero-hand-card">
-            <span className="hero-emoji" role="img" aria-label="Sign language I Love You hand gesture">🤟</span>
+            <span className="hero-emoji">
+              <HandSignIcon size={64} />
+            </span>
           </div>
         </div>
       </section>
@@ -280,28 +304,28 @@ function Home() {
         <div className="features-grid">
           <div className="feature-card">
             <div className="feature-icon-wrap icon-ai">
-              <span>🎥</span>
+              <span><CameraIcon size={24} /></span>
             </div>
             <h3>Sign → Text</h3>
             <p>Real-time camera & gesture detection translates hand gestures into readable text.</p>
           </div>
           <div className="feature-card">
             <div className="feature-icon-wrap icon-brand">
-              <span>🗣️</span>
+              <span><SpeakerIcon size={24} /></span>
             </div>
             <h3>Text → Speech</h3>
             <p>Converts typed or recognized text into natural voice output across 10+ languages.</p>
           </div>
           <div className="feature-card">
             <div className="feature-icon-wrap icon-sage">
-              <span>🎙️</span>
+              <span><MicIcon size={24} /></span>
             </div>
             <h3>Speech → Text</h3>
             <p>Captures spoken conversation and converts it into instant readable captions.</p>
           </div>
           <div className="feature-card">
             <div className="feature-icon-wrap icon-rose">
-              <span>🍽️</span>
+              <span><DiningIcon size={24} /></span>
             </div>
             <h3>Restaurant Mode</h3>
             <p>Accessible visual ordering interface for seamless dining and service interactions.</p>
@@ -369,10 +393,20 @@ function Home() {
                   ref={videoRef}
                   muted
                   playsInline
-                  style={{ display: cameraActive ? "block" : "none" }}
+                  autoPlay
+                  style={{ display: cameraState === "ACTIVE" ? "block" : "none" }}
                 />
                 
-                {!cameraActive && !isSimulating && (
+                {cameraState === "REQUESTING" && (
+                  <div className="converter-placeholder">
+                    <span className="placeholder-icon pulse-icon">
+                      <CameraIcon size={44} />
+                    </span>
+                    <p>Requesting camera access...</p>
+                  </div>
+                )}
+
+                {cameraState === "IDLE" && !isSimulating && (
                   <div className="converter-placeholder">
                     <span className="placeholder-icon">
                       <CameraIcon size={44} />
@@ -381,24 +415,24 @@ function Home() {
                   </div>
                 )}
 
-                {isSimulating && !cameraActive && (
+                {isSimulating && cameraState !== "ACTIVE" && (
                   <div className="simulator-feed-box">
                     <div className="sim-hand-hud">
                       <span className="sim-pulse-dot"></span>
                       <span>Sign Recognition Model: Active</span>
                     </div>
                     <div className="sim-center-visual">
-                      <span className="sim-emoji">{detectedSign?.emoji || "🤟"}</span>
+                      <span className="sim-emoji"><HandSignIcon size={48} /></span>
                       <span className="sim-hud-tag">Detected: {detectedSign?.label || "READY"}</span>
                     </div>
                   </div>
                 )}
 
                 {/* Gesture Detection HUD Overlay */}
-                {(cameraActive || isSimulating) && detectedSign && (
+                {(cameraState === "ACTIVE" || isSimulating) && detectedSign && (
                   <div className="gesture-hud-overlay">
                     <div className="hud-badge">
-                      <span className="hud-emoji">{detectedSign.emoji}</span>
+                      <span className="hud-emoji"><HandSignIcon size={24} /></span>
                       <div className="hud-info">
                         <span className="hud-label">Gesture: <strong>{detectedSign.label}</strong></span>
                         <span className="hud-confidence">Confidence: {detectedSign.confidence}%</span>
@@ -415,10 +449,14 @@ function Home() {
                 )}
               </div>
 
-              {cameraError && <p className="error-text">{cameraError}</p>}
+              {cameraError && (
+                <div className="error-box">
+                  <p className="error-text">{cameraError}</p>
+                </div>
+              )}
 
               <div className="converter-controls">
-                {!cameraActive ? (
+                {cameraState !== "ACTIVE" ? (
                   <button className="btn btn-ai" onClick={startCamera}>
                     <CameraIcon size={16} />
                     <span>Start Camera</span>
@@ -528,7 +566,13 @@ function Home() {
                   </button>
                 )}
               </div>
-              {isListening && (
+              {sttError && (
+                <div className="error-box" style={{ marginTop: "1rem" }}>
+                  <p className="error-text">{sttError}</p>
+                </div>
+              )}
+              
+              {isListening && !sttError && (
                 <div className="converter-status">
                   <span className="status-dot active"></span>
                   Listening in {language}... speak clearly into microphone

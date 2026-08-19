@@ -15,7 +15,7 @@ function Header() {
     <header className="header">
       <div className="header-inner">
         <Link to="/" className="logo">
-          <span className="logo-icon">🤟</span>
+          <span className="logo-icon"><HandSignIcon size={16} /></span>
           <span className="logo-text">
             <span className="logo-sign">Sign</span>
             <span className="logo-bridge">Bridge</span>
@@ -30,7 +30,7 @@ function Header() {
               onClick={() => setUserRole("deaf")}
               title="Deaf / Hard of Hearing User Mode (Visual cues & instant text phrases)"
             >
-              <span className="role-icon">🧏</span>
+              <span className="role-icon"><HandSignIcon size={16} /></span>
               <span className="role-label">Deaf</span>
             </button>
             <button

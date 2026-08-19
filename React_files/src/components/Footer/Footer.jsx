@@ -1,4 +1,5 @@
-import { Link } from "react-router-dom";
+import { Link } from 'react-router-dom';
+import { MessageSquareIcon, DiningIcon, CameraIcon, MicIcon, SpeakerIcon, HandSignIcon, SparklesIcon } from '../../components/Icons/Icons';
 import "./Footer.css";
 
 function Footer() {
@@ -8,7 +9,7 @@ function Footer() {
 
         <div className="footer-brand">
           <Link to="/" className="footer-logo">
-            <span className="logo-icon">🤟</span>
+            <span className="logo-icon"><HandSignIcon size={16} /></span>
             <span className="logo-text">
               <span className="logo-sign">Sign</span>
               <span className="logo-bridge">Bridge</span>
